@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="bilingual">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Junchi Shen — Quantum computing &amp; scientific ML</title>
+<meta name="description" content="Junchi Shen — computational mathematician working on quantum error correction, quantum machine learning, and high-performance scientific computing. M.S. Computational &amp; Applied Mathematics, University of Washington.">
+<script>
+  /* Applied before first paint so the chosen language never flashes. */
+  try { document.documentElement.dataset.lang = localStorage.getItem('js-lang') || 'bilingual'; } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ds.css">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<nav class="nav site-nav">
+  <span class="nav-brand">Junchi Shen</span>
+  <a href="#papers"><span data-en>Papers</span><span data-sep> </span><span data-zh lang="zh">论文</span></a>
+  <a href="#research"><span data-en>Research</span><span data-sep> </span><span data-zh lang="zh">研究</span></a>
+  <a href="#qbitbrief">Qbitbrief</a>
+  <a href="blog.html">Blog<span data-zh lang="zh"> 博客</span></a>
+  <a href="#education"><span data-en>Education</span><span data-sep> </span><span data-zh lang="zh">教育</span></a>
+  <div class="seg lang-seg" role="group" aria-label="Language 语言">
+    <button type="button" data-lang-set="bilingual">双语</button>
+    <button type="button" data-lang-set="en">EN</button>
+    <button type="button" data-lang-set="zh">中</button>
+  </div>
+  <a class="btn btn-primary" href="mailto:sjc20020319@gmail.com" style="flex-shrink:0;white-space:nowrap"><span data-en>Email me</span><span data-sep> </span><span data-zh lang="zh">写邮件</span></a>
+</nav>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div>
+      <span class="kicker"><span data-en>Quantum computing · Scientific ML</span><span data-sep> · </span><span data-zh lang="zh">量子计算</span></span>
+      <h1 class="display">Junchi Shen</h1>
+      <p class="hero-lede" data-en><span class="dropcap">C</span>omputational mathematician working on quantum computing — error correction, quantum machine learning, and the high-performance simulation behind both. M.S. in Computational &amp; Applied Mathematics at the University of Washington; author of three arXiv papers on quantum kernels and deep Lévy models; creator of Qbitbrief.</p>
+      <p class="hero-lede-zh" data-zh lang="zh">计算数学背景，现专注量子计算——量子纠错、量子机器学习，以及支撑二者的高性能科学计算。华盛顿大学计算与应用数学硕士，三篇 arXiv 论文作者（量子核方法与深度 Lévy 模型），量子计算资讯站 Qbitbrief 的作者与搭建者。</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://github.com/Junchi-Shen" target="_blank" rel="noopener">GitHub <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg></a>
+        <a class="btn btn-secondary" href="mailto:sjc20020319@gmail.com">sjc20020319@gmail.com</a>
+        <a class="btn btn-ghost" href="#papers"><span data-en>Read the papers</span><span data-sep> </span><span data-zh lang="zh">看论文</span></a>
+      </div>
+      <p class="hero-place">Seattle, WA</p>
+    </div>
+    <figure class="plate portrait">
+      <img src="assets/portrait.jpg" alt="Junchi Shen" onerror="this.closest('.portrait').classList.add('is-empty');this.remove()">
+      <span class="portrait-ph"><span class="t"><span data-en>Drop a portrait at assets/portrait.jpg</span><span data-sep> · </span><span data-zh lang="zh">把个人照片放到 assets/portrait.jpg</span></span></span>
+    </figure>
+  </section>
+
+  <hr class="rule">
+
+  <section class="stats">
+    <div class="stats-row">
+      <div>
+        <p class="stat-num stat-num-accent">3</p>
+        <p class="stat-label"><span data-en>arXiv papers</span><span data-sep> · </span><span data-zh lang="zh">arXiv 论文</span></p>
+      </div>
+      <div>
+        <p class="stat-num">400×</p>
+        <p class="stat-label"><span data-en>GPU speedup, 3D simulation</span><span data-sep> · </span><span data-zh lang="zh">GPU 加速比</span></p>
+      </div>
+      <div>
+        <p class="stat-num">64B+</p>
+        <p class="stat-label"><span data-en>Grid points at scale</span><span data-sep> · </span><span data-zh lang="zh">网格点规模</span></p>
+      </div>
+      <div>
+        <p class="stat-num">3</p>
+        <p class="stat-label"><span data-en>Degrees: math, AI, economics</span><span data-sep> · </span><span data-zh lang="zh">三段学位</span></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section style="padding:84px 0 70px">
+    <span class="kicker kicker-lg"><span data-en>Research directions</span><span data-sep> · </span><span data-zh lang="zh">研究方向</span></span>
+    <div class="split">
+      <div>
+        <h2 data-en>Quantum error correction</h2>
+        <div class="split-zh-title" data-zh lang="zh">量子纠错</div>
+        <p class="en" data-en>Surface-code circuits built in Riverlane’s Deltakit and compiled to Stim for fast stabilizer simulation — rotated planar and CSS codes, with encoding and decoding pipelines validated in Qiskit.</p>
+        <p class="zh" data-zh lang="zh">基于 Riverlane Deltakit 构建旋转平面码与 CSS 表面码电路，转换至 Stim 做高性能稳定子模拟，并用 Qiskit 验证编码与解码流程。</p>
+      </div>
+      <div>
+        <h2 data-en>Quantum &amp; deep models for markets</h2>
+        <div class="split-zh-title" data-zh lang="zh">量子与深度金融模型</div>
+        <p class="en" data-en>Where quantum and generative methods meet pricing: quantum kernels for the cross-section of returns, conditional deep Lévy path generation, and diffusion with a tempered-stable volatility clock.</p>
+        <p class="zh" data-zh lang="zh">量子与生成式方法在定价中的交汇：面向股票截面收益的量子核、条件化深度 Lévy 路径生成，以及带回火稳定波动率时钟的扩散模型。</p>
+      </div>
+      <div>
+        <h2 data-en>Scientific computing</h2>
+        <div class="split-zh-title" data-zh lang="zh">高性能科学计算</div>
+        <p class="en" data-en>CUDA and PyCUDA at awkward scales — a 400× speedup on 3D polycrystal simulation, 64B+ grid points under tight GPU memory, and pseudospectral solvers for 3D nonlinear PDEs.</p>
+        <p class="zh" data-zh lang="zh">CUDA / PyCUDA 下的大规模计算：三维多晶模拟 400 倍加速、受限显存下 640 亿+ 网格点，以及三维非线性偏微分方程的伪谱求解器。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="papers" style="padding:56px 0 70px">
+    <span class="kicker"><span data-en>Publications</span><span data-sep> · </span><span data-zh lang="zh">论文发表</span></span>
+
+    <div class="paper">
+      <div class="paper-id">2607.20168</div>
+      <div>
+        <h3><a href="https://arxiv.org/abs/2607.20168" target="_blank" rel="noopener">Quantum Kernels and the Cross-Section of Stock Returns: Anatomy of a Vanishing Advantage</a></h3>
+        <p class="paper-note"><span data-en>Where a quantum-kernel edge appears in equity return prediction — and precisely how it vanishes.</span><span data-sep> · </span><span data-zh lang="zh">量子核方法在股票截面收益预测中的优势从何而来，又如何消失。</span></p>
+      </div>
+      <div class="paper-meta">q-fin.PR · 2026</div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-id">2607.19218</div>
+      <div>
+        <h3><a href="https://arxiv.org/abs/2607.19218" target="_blank" rel="noopener">Denoising Subordinated Probabilistic Models: Diffusion with a Tempered-Stable Volatility Clock, and What the Noise Mechanism Actually Controls</a></h3>
+        <p class="paper-note"><span data-en>Diffusion generation run on a tempered-stable volatility clock, and what the noise mechanism controls.</span><span data-sep> · </span><span data-zh lang="zh">在回火稳定波动率时钟上运行的扩散生成模型，以及噪声机制真正控制了什么。</span></p>
+      </div>
+      <div class="paper-meta">q-fin.MF · 2026</div>
+    </div>
+
+    <div class="paper">
+      <div class="paper-id">2509.13374</div>
+      <div>
+        <h3><a href="https://arxiv.org/abs/2509.13374" target="_blank" rel="noopener">Conditional Deep Lévy Models for Exotic Derivatives: History-Aware Path Generation and P–Q Payoff Diagnostics</a></h3>
+        <p class="paper-note"><span data-en>History-aware path generation for exotic derivatives, with payoff diagnostics under both the P and Q measures.</span><span data-sep> · </span><span data-zh lang="zh">面向奇异衍生品的历史感知路径生成，并在 P / Q 两个测度下做收益诊断。</span></p>
+      </div>
+      <div class="paper-meta">q-fin.PR · 2025</div>
+    </div>
+  </section>
+
+  <section id="research" style="padding:56px 0 84px">
+    <span class="kicker"><span data-en>Selected projects</span><span data-sep> · </span><span data-zh lang="zh">研究项目</span></span>
+
+    <div class="proj">
+      <div class="proj-num">01</div>
+      <div>
+        <h3 data-en>Quantum-enhanced Lévy diffusion for option pricing</h3>
+        <p class="en" data-en>Replacing the classical U-Net denoiser with parameterized quantum circuits in a Lévy-noise diffusion framework — AngleEmbedding with strongly entangling layers, heavy-tailed market dynamics beyond Gaussian assumptions, and a clean fallback to a classical MLP.</p>
+        <p class="zh" data-zh lang="zh">在 Lévy 噪声扩散框架中以参数化量子电路替代 U-Net 去噪器，刻画高斯假设之外的厚尾市场动态，并支持经典 MLP 回退。</p>
+        <div class="tag-row"><span class="tag tag-outline">PennyLane</span><span class="tag tag-outline">PyTorch</span><span class="tag tag-outline">PQC</span></div>
+      </div>
+      <div class="proj-meta is-live"><span data-en>In progress</span><span data-sep> · </span><span data-zh lang="zh">进行中</span></div>
+    </div>
+
+    <div class="proj">
+      <div class="proj-num">02</div>
+      <div>
+        <h3 data-en>Surface-code error-correction simulation</h3>
+        <p class="en" data-en>Rotated planar and CSS surface-code circuits built with Riverlane Deltakit, converted to Stim for high-performance stabilizer simulation; Bell and GHZ encoding–decoding pipelines validated in Qiskit.</p>
+        <p class="zh" data-zh lang="zh">用 Riverlane Deltakit 构建旋转平面码与 CSS 表面码电路，转 Stim 做稳定子模拟，Bell / GHZ 编解码流程经 Qiskit 验证。</p>
+        <div class="tag-row"><span class="tag tag-outline">Deltakit</span><span class="tag tag-outline">Stim</span><span class="tag tag-outline">Qiskit</span></div>
+      </div>
+      <div class="proj-meta">Deltakit → Stim</div>
+    </div>
+
+    <div class="proj">
+      <div class="proj-num">03</div>
+      <div>
+        <h3 data-en>Quantum kernel training on IBM Runtime</h3>
+        <p class="en" data-en>Bell and GHZ states with StatevectorSampler, then quantum kernel training on the Graph7 dataset with parameterized circuits — executed at scale through Qiskit IBM Runtime and Qiskit Serverless.</p>
+        <p class="zh" data-zh lang="zh">以 StatevectorSampler 实现 Bell / GHZ 态，基于参数化电路在 Graph7 数据集上训练量子核，经 Qiskit IBM Runtime 与 Serverless 规模化运行。</p>
+        <div class="tag-row"><span class="tag tag-outline">Qiskit</span><span class="tag tag-outline">IBM Runtime</span></div>
+      </div>
+      <div class="proj-meta">IBM Quantum</div>
+    </div>
+
+    <div class="proj">
+      <div class="proj-num">04</div>
+      <div>
+        <h3 data-en>Pauli–Gibbs attention</h3>
+        <p class="en" data-en>A Pauli-structured energy view of self-attention — scores parameterized as Gibbs distributions over Pauli feature energies, with O(T) bilinear forms and head-level specialization into kernel and directional modes, studied on a TinyLM testbed.</p>
+        <p class="zh" data-zh lang="zh">以 Pauli 结构的能量视角理解自注意力：将打分参数化为 Pauli 特征能量上的 Gibbs 分布，实现 O(T) 双线性形式与注意力头的核 / 方向分工。</p>
+        <div class="tag-row"><span class="tag tag-outline">Transformers</span><span class="tag tag-outline">PyTorch</span></div>
+      </div>
+      <div class="proj-meta"><span data-en>Energy-based models</span><span data-sep> · </span><span data-zh lang="zh">能量模型</span></div>
+    </div>
+
+    <div class="proj">
+      <div class="proj-num">05</div>
+      <div>
+        <h3 data-en>Large-scale 3D polycrystal simulation</h3>
+        <p class="en" data-en>GPU-accelerated simulation scaling to 64B+ grid points under constrained memory — chunked memory management, asynchronous IO, and kernel execution tuned for a 400× speedup on scientific workloads.</p>
+        <p class="zh" data-zh lang="zh">GPU 加速的三维多晶模拟：分块内存管理与异步 IO，在受限显存下扩展至 640 亿+ 网格点，整体提速 400 倍。</p>
+        <div class="tag-row"><span class="tag tag-outline">CUDA</span><span class="tag tag-outline">PyCUDA</span></div>
+      </div>
+      <div class="proj-meta"><span data-en>400× speedup</span><span data-sep> · </span><span data-zh lang="zh">400 倍加速</span></div>
+    </div>
+
+    <div class="proj">
+      <div class="proj-num">06</div>
+      <div>
+        <h3 data-en>Pseudospectral solver for 3D Gross–Pitaevskii</h3>
+        <p class="en" data-en>FFT-based Laplacians take the 3D Gross–Pitaevskii equation from O(N<sup>6</sup>) to O(N<sup>3</sup> log N); correctness validated through conservation laws and symmetry analysis, with the framework generalizing to reaction–diffusion systems.</p>
+        <p class="zh" data-zh lang="zh">基于 FFT 的拉普拉斯算子将三维 Gross–Pitaevskii 方程的复杂度从 O(N<sup>6</sup>) 降至 O(N<sup>3</sup> log N)，以守恒律与对称性验证，可推广至反应扩散系统。</p>
+        <div class="tag-row"><span class="tag tag-outline">Spectral methods</span><span class="tag tag-outline">Python</span></div>
+      </div>
+      <div class="proj-meta">UW AMATH 581</div>
+    </div>
+  </section>
+
+</div>
+
+<section id="qbitbrief" class="qb">
+  <div class="qb-mark" aria-hidden="true">Q</div>
+  <div class="qb-inner">
+    <span class="kicker"><span data-en>Side project</span><span data-sep> · </span><span data-zh lang="zh">个人项目</span></span>
+    <h2>Qbitbrief</h2>
+    <p class="en" data-en>A quantum-computing briefing site, designed and built end to end — tracking hardware progress, error-correction results, and the algorithms worth reading about.</p>
+    <p class="zh" data-zh lang="zh">我独立设计并搭建的量子计算资讯网站，追踪硬件进展、量子纠错成果与值得关注的算法。</p>
+    <div class="qb-actions">
+      <a class="btn btn-primary" href="https://qbitbrief.com" target="_blank" rel="noopener"><span data-en>Visit Qbitbrief</span><span data-sep> </span><span data-zh lang="zh">前往 Qbitbrief</span> <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg></a>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <section id="education" style="padding:84px 0 70px">
+    <span class="kicker kicker-lg"><span data-en>Education</span><span data-sep> · </span><span data-zh lang="zh">教育背景</span></span>
+    <div class="split">
+      <div>
+        <h3>University of Washington</h3>
+        <p class="plain"><span data-en>M.S., Computational &amp; Applied Mathematics</span><span data-sep> · </span><span data-zh lang="zh">计算与应用数学硕士</span></p>
+        <p class="courses">Quantum Information &amp; Computation · High-Performance Scientific Computing · PDEs · Optimization · Probability &amp; Measure Theory · Complex Systems</p>
+        <p class="place">Seattle, WA</p>
+      </div>
+      <div>
+        <h3>Johns Hopkins University</h3>
+        <p class="plain"><span data-en>M.S., Artificial Intelligence &amp; Risk Management</span><span data-sep> · </span><span data-zh lang="zh">人工智能与风险管理硕士</span></p>
+        <p class="courses">Practical Machine Learning · Large-Scale Computing &amp; Cloud · Forecasting Models · Database &amp; Management</p>
+        <p class="place">Baltimore, MD</p>
+      </div>
+      <div>
+        <h3>University of Birmingham</h3>
+        <p class="plain"><span data-en>B.S., Mathematical Economics &amp; Statistics</span><span data-sep> · </span><span data-zh lang="zh">数理经济与统计学士</span></p>
+        <p class="place">Birmingham, UK</p>
+      </div>
+    </div>
+    <div style="margin-top:42px;padding-top:28px;border-top:1px solid var(--color-divider)">
+      <p style="font-size:12px;line-height:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0;color:var(--color-accent-700)"><span data-en>Certificates</span><span data-sep> · </span><span data-zh lang="zh">证书</span></p>
+      <p style="font-size:15.5px;line-height:26px;margin:10px 0 0;color:color-mix(in srgb,var(--color-text) 78%,transparent)">Professional Certificate in ML &amp; AI — Imperial College London&nbsp;&nbsp;·&nbsp;&nbsp;Hands-on Quantum Error Correction — Google Quantum AI</p>
+    </div>
+  </section>
+
+  <section style="padding:0 0 84px">
+    <span class="kicker"><span data-en>Toolbox</span><span data-sep> · </span><span data-zh lang="zh">技能栈</span></span>
+    <dl class="skills">
+      <dt><span data-en>Quantum</span><span data-sep> · </span><span data-zh lang="zh">量子</span></dt>
+      <dd><span class="tag tag-outline">Qiskit</span><span class="tag tag-outline">Cirq</span><span class="tag tag-outline">PennyLane</span><span class="tag tag-outline">Stim</span><span class="tag tag-outline">Deltakit</span></dd>
+      <dt><span data-en>Machine learning</span><span data-sep> · </span><span data-zh lang="zh">机器学习</span></dt>
+      <dd><span class="tag tag-outline">PyTorch</span><span class="tag tag-outline">Transformers</span><span class="tag tag-outline">Diffusion models</span></dd>
+      <dt><span data-en>HPC</span><span data-sep> · </span><span data-zh lang="zh">高性能计算</span></dt>
+      <dd><span class="tag tag-outline">CUDA C</span><span class="tag tag-outline">PyCUDA</span><span class="tag tag-outline">Parallel computing</span><span class="tag tag-outline">Async IO</span></dd>
+      <dt><span data-en>Methods</span><span data-sep> · </span><span data-zh lang="zh">数理方法</span></dt>
+      <dd><span class="tag tag-outline">Stochastic analysis</span><span class="tag tag-outline">PDEs</span><span class="tag tag-outline">Monte Carlo</span><span class="tag tag-outline">Optimization</span></dd>
+      <dt><span data-en>Languages &amp; tools</span><span data-sep> · </span><span data-zh lang="zh">语言与工具</span></dt>
+      <dd><span class="tag tag-outline">Python</span><span class="tag tag-outline">C++</span><span class="tag tag-outline">R</span><span class="tag tag-outline">Linux</span><span class="tag tag-outline">Git</span></dd>
+    </dl>
+  </section>
+
+  <hr class="rule">
+
+  <section id="contact" style="padding:70px 0 56px">
+    <span class="kicker"><span data-en>Contact</span><span data-sep> · </span><span data-zh lang="zh">联系方式</span></span>
+    <a class="contact-mail" href="mailto:sjc20020319@gmail.com">sjc20020319@gmail.com</a>
+    <p data-en style="font-size:15.5px;line-height:28px;max-width:58ch;margin:24px 0 0;color:color-mix(in srgb,var(--color-text) 78%,transparent)">Open to research collaboration and roles in quantum computing and scientific machine learning.</p>
+    <p data-zh lang="zh" style="font-size:15px;line-height:27px;max-width:58ch;margin:10px 0 0;color:color-mix(in srgb,var(--color-text) 64%,transparent)">欢迎量子计算与科学机器学习方向的研究合作与工作机会。</p>
+    <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;margin-top:28px">
+      <a class="btn btn-primary" href="mailto:sjc20020319@gmail.com"><span data-en>Email me</span><span data-sep> </span><span data-zh lang="zh">写邮件</span></a>
+      <a class="btn btn-secondary" href="https://github.com/Junchi-Shen" target="_blank" rel="noopener">github.com/Junchi-Shen <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg></a>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <span>Junchi Shen — Seattle, WA</span>
+    <span>© 2026</span>
+  </footer>
+
+</div>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="bilingual">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blog — Junchi Shen</title>
+<meta name="description" content="Notes and opinions on quantum computing, scientific ML, and whatever the field is arguing about this month.">
+<script>
+  try { document.documentElement.dataset.lang = localStorage.getItem('js-lang') || 'bilingual'; } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ds.css">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<nav class="nav site-nav">
+  <span class="nav-brand">Junchi Shen</span>
+  <a href="index.html"><span data-en>Home</span><span data-sep> </span><span data-zh lang="zh">主页</span></a>
+  <a href="#" aria-current="page">Blog<span data-zh lang="zh"> 博客</span></a>
+  <div class="seg lang-seg" role="group" aria-label="Language 语言">
+    <button type="button" data-lang-set="bilingual">双语</button>
+    <button type="button" data-lang-set="en">EN</button>
+    <button type="button" data-lang-set="zh">中</button>
+  </div>
+  <a class="btn btn-primary owner-only hidden" href="#" data-act="new" style="flex-shrink:0;white-space:nowrap"><span data-en>New post</span><span data-sep> </span><span data-zh lang="zh">写文章</span></a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ── list ─────────────────────────────────────────────────────────── -->
+  <section id="view-list" style="padding:84px 0 70px">
+    <span class="kicker"><span data-en>Notebook</span><span data-sep> · </span><span data-zh lang="zh">个人博客</span><span> — <span id="pub-count">0</span> <span data-en>published</span><span data-sep> · </span><span data-zh lang="zh">篇已发布</span></span><span class="owner-only hidden"> · <span id="draft-count">0</span> <span data-en>drafts</span><span data-sep> · </span><span data-zh lang="zh">篇草稿</span></span></span>
+
+    <div class="blog-head">
+      <h1 class="blog-title">Blog</h1>
+      <button type="button" class="btn btn-primary owner-only hidden" data-act="new" style="white-space:nowrap"><span data-en>New post</span><span data-sep> </span><span data-zh lang="zh">写文章</span></button>
+    </div>
+    <p class="blog-lede" data-en>Notes and opinions on quantum computing, scientific ML, and whatever the field is arguing about this month. Written here, published here.</p>
+    <p class="blog-lede-zh" data-zh lang="zh">关于量子计算、科学机器学习的笔记与看法——在这里写，在这里发。</p>
+
+    <div class="blog-toolbar">
+      <div class="blog-filters">
+        <span class="owner-only hidden" style="display:contents">
+          <button type="button" class="tag" data-status="all"><span data-en>All</span><span data-sep> </span><span data-zh lang="zh">全部</span></button>
+          <button type="button" class="tag" data-status="pub"><span data-en>Published</span><span data-sep> </span><span data-zh lang="zh">已发布</span></button>
+          <button type="button" class="tag" data-status="draft"><span data-en>Drafts</span><span data-sep> </span><span data-zh lang="zh">草稿</span></button>
+          <span class="sep"></span>
+        </span>
+        <span id="tag-list" style="display:contents"></span>
+      </div>
+      <input class="input blog-search" id="search" type="search" placeholder="搜索标题、正文、标签 · Search">
+    </div>
+
+    <div class="blog-empty hidden" id="empty">
+      <h2><span data-en>No posts yet.</span><span data-sep> </span><span data-zh lang="zh">还没有文章。</span></h2>
+      <p><span data-en>Write the first one — drafts stay private until you publish. Markdown supported.</span><span data-sep> · </span><span data-zh lang="zh">写下第一篇——草稿在发布前只有你可见，正文支持 Markdown。</span></p>
+      <button type="button" class="btn btn-primary owner-only hidden" data-act="new" style="margin-top:24px;white-space:nowrap"><span data-en>Start writing</span><span data-sep> </span><span data-zh lang="zh">开始写作</span></button>
+    </div>
+
+    <p class="blog-nomatch hidden" id="nomatch"><span data-en>Nothing matches the current filter.</span><span data-sep> · </span><span data-zh lang="zh">没有符合筛选条件的文章。</span></p>
+
+    <div id="posts" style="margin-top:28px"></div>
+
+    <div class="blog-backup owner-only hidden">
+      <span class="label"><span data-en>Backup</span><span data-sep> · </span><span data-zh lang="zh">备份</span></span>
+      <button type="button" class="btn btn-ghost" data-act="export"><span data-en>Export JSON</span><span data-sep> </span><span data-zh lang="zh">导出 JSON</span></button>
+      <button type="button" class="btn btn-ghost" data-act="import"><span data-en>Import JSON</span><span data-sep> </span><span data-zh lang="zh">导入 JSON</span></button>
+      <input type="file" accept="application/json,.json" id="import-file" style="display:none">
+    </div>
+  </section>
+
+  <!-- ── editor ───────────────────────────────────────────────────────── -->
+  <section id="view-editor" class="hidden" style="padding:70px 0 98px">
+    <button type="button" class="btn btn-ghost" data-act="back" style="margin-left:calc(-1 * var(--space-1))">← <span data-en>Back to blog</span><span data-sep> </span><span data-zh lang="zh">返回博客</span></button>
+    <span class="kicker" style="margin:28px 0 42px"><span data-en>Editor</span><span data-sep> · </span><span data-zh lang="zh">编辑文章</span></span>
+    <div class="editor-grid">
+      <div>
+        <input class="editor-title" id="d-title" placeholder="文章标题 · Title">
+        <textarea class="editor-body" id="d-content" placeholder="在这里写正文，空行分段 · Write here; blank lines make paragraphs"></textarea>
+        <p class="editor-hint">Markdown: ## <span data-en>heading</span><span data-sep>/</span><span data-zh lang="zh">标题</span> &nbsp; **<span data-en>bold</span><span data-sep>/</span><span data-zh lang="zh">粗体</span>** &nbsp; *<span data-en>italic</span><span data-sep>/</span><span data-zh lang="zh">强调</span>* &nbsp; - <span data-en>list</span><span data-sep>/</span><span data-zh lang="zh">列表</span> &nbsp; &gt; <span data-en>quote</span><span data-sep>/</span><span data-zh lang="zh">引用</span> &nbsp; `code` &nbsp; ---</p>
+      </div>
+      <div class="editor-side">
+        <div class="field">
+          <label for="d-summary"><span data-en>Summary, shown in the list</span><span data-sep> · </span><span data-zh lang="zh">摘要（显示在列表）</span></label>
+          <textarea class="input" id="d-summary" placeholder="一两句话 · A sentence or two" style="min-height:72px;resize:vertical;font-family:var(--font-body);line-height:22px"></textarea>
+        </div>
+        <div class="field">
+          <label for="d-tags"><span data-en>Tags, comma-separated</span><span data-sep> · </span><span data-zh lang="zh">标签（逗号分隔）</span></label>
+          <input class="input" id="d-tags" placeholder="quantum, QEC">
+        </div>
+        <p class="editor-count"><span id="d-chars">0</span> <span data-en>characters</span><span data-sep> · </span><span data-zh lang="zh">字</span> · ≈<span id="d-read">1</span> <span data-en>min read</span><span data-sep> · </span><span data-zh lang="zh">分钟</span></p>
+        <p class="editor-saved hidden" id="d-saved"><span data-en>Draft autosaved</span><span data-sep> · </span><span data-zh lang="zh">草稿已自动保存</span> <span id="d-saved-at"></span></p>
+        <div class="editor-actions">
+          <button type="button" class="btn btn-secondary" data-act="save"><span data-en>Save draft</span><span data-sep> </span><span data-zh lang="zh">保存草稿</span></button>
+          <button type="button" class="btn btn-primary" data-act="preview"><span data-en>Preview &amp; publish</span><span data-sep> </span><span data-zh lang="zh">预览并发布</span> →</button>
+        </div>
+        <p class="editor-note"><span data-en>Autosaves as you type. Content lives in this browser; use Export for a backup.</span><span data-sep> · </span><span data-zh lang="zh">输入时自动保存；内容存于本机浏览器，可在列表页导出备份。</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── preview / article ────────────────────────────────────────────── -->
+  <section id="view-preview" class="hidden" style="padding:70px 0 98px">
+    <div class="pv-bar">
+      <button type="button" class="btn btn-ghost" data-act="back" style="margin-left:calc(-1 * var(--space-1))">← <span data-en>Back to blog</span><span data-sep> </span><span data-zh lang="zh">返回博客</span></button>
+      <div class="group hidden" id="pv-draft-bar">
+        <span class="state"><span data-en>Preview — not published yet</span><span data-sep> · </span><span data-zh lang="zh">预览，尚未发布</span></span>
+        <button type="button" class="btn btn-secondary" data-act="edit-pv"><span data-en>Back to edit</span><span data-sep> </span><span data-zh lang="zh">返回编辑</span></button>
+        <button type="button" class="btn btn-primary" data-act="publish"><span data-en>Publish</span><span data-sep> </span><span data-zh lang="zh">发布</span></button>
+      </div>
+      <div class="group hidden" id="pv-pub-bar">
+        <button type="button" class="btn btn-secondary" data-act="edit-pv"><span data-en>Edit</span><span data-sep> </span><span data-zh lang="zh">编辑</span></button>
+        <button type="button" class="btn btn-ghost" data-act="unpublish"><span data-en>Unpublish</span><span data-sep> </span><span data-zh lang="zh">撤回为草稿</span></button>
+      </div>
+    </div>
+    <article class="article">
+      <div class="article-meta">
+        <span class="date" id="pv-date"></span>
+        <span class="read"><span id="pv-read"></span> <span data-en>min</span><span data-sep> · </span><span data-zh lang="zh">分钟</span></span>
+        <span class="tag tag-outline hidden" id="pv-draft-flag"><span data-en>Draft</span><span data-sep> </span><span data-zh lang="zh">草稿</span></span>
+        <span class="names" id="pv-tags"></span>
+      </div>
+      <h1 id="pv-title"></h1>
+      <p class="article-summary hidden" id="pv-summary"></p>
+      <hr>
+      <div class="article-body" id="pv-body"></div>
+      <div class="article-nav">
+        <div class="newer hidden" id="pv-newer">
+          <span class="label"><span data-en>Newer</span><span data-sep> · </span><span data-zh lang="zh">较新</span></span>
+          <a data-act="prev">← <span id="pv-prev-title"></span></a>
+        </div>
+        <div class="older hidden" id="pv-older">
+          <span class="label"><span data-en>Older</span><span data-sep> · </span><span data-zh lang="zh">较早</span></span>
+          <a data-act="next"><span id="pv-next-title"></span> →</a>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <footer class="site-footer">
+    <span>Junchi Shen — Blog</span>
+    <span class="footer-lock">© 2026
+      <a data-act="lock-out" class="owner-only hidden"><span data-en>Owner sign-out</span><span data-sep> · </span><span data-zh lang="zh">退出作者模式</span></a>
+      <a data-act="lock-in" class="guest-only"><span data-en>Owner sign-in</span><span data-sep> · </span><span data-zh lang="zh">作者登录</span></a>
+    </span>
+  </footer>
+
+</div>
+
+<script src="assets/site.js"></script>
+<script src="assets/blog.js"></script>
+</body>
+</html>
