@@ -1,13 +1,14 @@
 /* Blog — list / editor / preview, backed by localStorage.
    A faithful port of the Claude Design prototype's logic to plain JS.
 
-   Note on "owner mode": the passphrase is a convenience switch for the
-   authoring UI only. Everything lives in this browser's localStorage, so it
-   is not access control — nothing here is secret and nothing is on a server. */
+   Note on "owner mode": the passphrase checks against a PBKDF2-SHA256 digest in
+   assets/auth.js, so the plaintext is not in the repo. It is still only a switch
+   for the authoring UI — a static site has no server to authenticate against,
+   and everything lives in this browser's localStorage. Nothing is protected by
+   it because nothing sensitive is served. See README. */
 (function () {
   var POSTS_KEY = 'jsblog-posts';
   var OWNER_KEY = 'jsblog-owner';
-  var OWNER_PASS = 'qbit-2026';
   var AUTOSAVE_MS = 1200;
 
   var S = {
@@ -48,6 +49,38 @@
     return String(p.tags || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean);
   }
   function show(el, on) { if (el) el.classList.toggle('hidden', !on); }
+
+  /* ── owner passphrase ────────────────────────────────────────────────── */
+
+  function hexToBytes(hex) {
+    var out = new Uint8Array(hex.length / 2);
+    for (var i = 0; i < out.length; i++) out[i] = parseInt(hex.substr(i * 2, 2), 16);
+    return out;
+  }
+  function bytesToHex(buf) {
+    return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+      return ('0' + b.toString(16)).slice(-2);
+    }).join('');
+  }
+
+  // Resolves true/false, or rejects with a reason the caller can explain.
+  function verifyPassphrase(input) {
+    var cfg = window.BLOG_AUTH;
+    if (!cfg || !cfg.hash || !cfg.salt) return Promise.reject(new Error('no-config'));
+    if (!(window.crypto && window.crypto.subtle)) return Promise.reject(new Error('no-crypto'));
+    var bytes = new TextEncoder().encode(input);
+    return window.crypto.subtle
+      .importKey('raw', bytes, 'PBKDF2', false, ['deriveBits'])
+      .then(function (key) {
+        return window.crypto.subtle.deriveBits({
+          name: 'PBKDF2',
+          salt: hexToBytes(cfg.salt),
+          iterations: cfg.iterations,
+          hash: 'SHA-256'
+        }, key, cfg.hash.length * 4);
+      })
+      .then(function (bits) { return bytesToHex(bits) === cfg.hash; });
+  }
 
   /* ── markdown ────────────────────────────────────────────────────────── */
 
@@ -384,13 +417,20 @@
       case 'lock-in': {
         var pass = window.prompt('输入作者口令 · Enter owner passphrase');
         if (pass == null) break;
-        if (pass === OWNER_PASS) {
+        verifyPassphrase(pass).then(function (ok) {
+          if (!ok) { window.alert('口令不正确 · Wrong passphrase'); return; }
           try { localStorage.setItem(OWNER_KEY, '1'); } catch (err) {}
           S.owner = true;
           render();
-        } else {
-          window.alert('口令不正确 · Wrong passphrase');
-        }
+        }).catch(function (err) {
+          if (err.message === 'no-crypto') {
+            window.alert('浏览器加密接口不可用：请用 https:// 或 http://localhost 打开，file:// 下无法校验口令。'
+              + '\n\nWebCrypto needs a secure context — open the site over https or localhost, not file://.');
+          } else {
+            window.alert('缺少 assets/auth.js，先运行 node tools/set-passphrase.mjs 生成。'
+              + '\n\nassets/auth.js is missing — run node tools/set-passphrase.mjs first.');
+          }
+        });
         break;
       }
       case 'lock-out':

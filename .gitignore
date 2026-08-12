@@ -1,2 +1,6 @@
 .DS_Store
 *.log
+
+# Owner passphrase in plaintext — never commit. Only the PBKDF2 digest in
+# assets/auth.js ships with the site.
+.env
