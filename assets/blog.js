@@ -87,39 +87,64 @@
   function mdInline(text) {
     // Escape first, then apply inline marks — the markers survive escaping.
     return esc(text)
+      .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (m, label, href) {
+        // Only link schemes that can't execute script; anything else stays literal.
+        if (!/^(https?:\/\/|mailto:|\/|#)/i.test(href)) return m;
+        var ext = /^https?:\/\//i.test(href);
+        return '<a href="' + href + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + label + '</a>';
+      })
       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
       .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+      .replace(/~~([^~]+)~~/g, '<del>$1</del>')
       .replace(/`([^`]+)`/g, '<code>$1</code>');
   }
 
   function mdRender(md) {
     var lines = String(md || '').split('\n');
-    var out = [], para = [], list = null, quote = null;
+    var out = [], para = [], list = null, listType = '', quote = null, fence = null;
 
     function flushP() {
       if (para.length) { out.push('<p>' + mdInline(para.join(' ')) + '</p>'); para = []; }
     }
     function flushL() {
       if (list) {
-        out.push('<ul>' + list.map(function (it) { return '<li>' + mdInline(it) + '</li>'; }).join('') + '</ul>');
+        out.push('<' + listType + '>' + list.map(function (it) { return '<li>' + mdInline(it) + '</li>'; }).join('') + '</' + listType + '>');
         list = null;
       }
     }
     function flushQ() {
       if (quote) { out.push('<blockquote>' + mdInline(quote.join(' ')) + '</blockquote>'); quote = null; }
     }
+    function flushF() {
+      if (fence) { out.push('<pre><code>' + esc(fence.join('\n')) + '</code></pre>'); fence = null; }
+    }
     function flushAll() { flushP(); flushL(); flushQ(); }
 
     lines.forEach(function (raw) {
+      if (fence) {
+        // Inside a code fence nothing is markdown until the closing ```.
+        if (/^```/.test(raw.trim())) flushF(); else fence.push(raw);
+        return;
+      }
       var t = raw.trim();
+      if (/^```/.test(t)) { flushAll(); fence = []; return; }
       if (!t) { flushAll(); return; }
       if (/^---+$/.test(t)) { flushAll(); out.push('<hr>'); return; }
       if (t.indexOf('### ') === 0) { flushAll(); out.push('<h3>' + mdInline(t.slice(4)) + '</h3>'); return; }
       if (t.indexOf('## ') === 0) { flushAll(); out.push('<h2>' + mdInline(t.slice(3)) + '</h2>'); return; }
-      if (t.indexOf('- ') === 0 || t.indexOf('* ') === 0) { flushP(); flushQ(); (list = list || []).push(t.slice(2)); return; }
+      var ol = t.match(/^\d+\.\s+(.*)$/);
+      if (t.indexOf('- ') === 0 || t.indexOf('* ') === 0 || ol) {
+        var type = ol ? 'ol' : 'ul';
+        flushP(); flushQ();
+        if (list && listType !== type) flushL();
+        if (!list) { list = []; listType = type; }
+        list.push(ol ? ol[1] : t.slice(2));
+        return;
+      }
       if (t.indexOf('> ') === 0) { flushP(); flushL(); (quote = quote || []).push(t.slice(2)); return; }
       para.push(t);
     });
+    flushF(); // an unclosed fence at EOF still renders as code
     flushAll();
     return out.length ? out.join('') : '<p class="empty">(empty 空)</p>';
   }
@@ -198,7 +223,10 @@
 
   function excerpt(p) {
     if (p.summary && p.summary.trim()) return p.summary.trim();
-    var text = String(p.content || '').replace(/[#>*`-]/g, '').replace(/\s+/g, ' ').trim();
+    var text = String(p.content || '')
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')  // keep link labels, drop URLs
+      .replace(/[#>*`~-]/g, '')
+      .replace(/\s+/g, ' ').trim();
     return text.slice(0, 150) + (String(p.content || '').trim().length > 150 ? '…' : '');
   }
 
@@ -446,6 +474,64 @@
   $('#search').addEventListener('input', function (e) { S.q = e.target.value; renderList(); });
   $('#d-title').addEventListener('input', function (e) { onDraftInput('title', e.target.value); });
   $('#d-content').addEventListener('input', function (e) { onDraftInput('content', e.target.value); });
+  // (The markdown toolbar fires 'input' on the textarea in both of its apply
+  // paths — execCommand and the .value fallback — so the listener above also
+  // catches toolbar edits and keeps autosave/word-count in sync.)
+
+  // Keyboard shortcuts, matching github.com's comment box. The vendored
+  // toolbar ships none in v2, but each md-* element applies its style from
+  // .click(), so a keydown map is all the wiring needed.
+  var HOTKEY_IS_MAC = /Mac|iP/.test(navigator.platform);
+  $('#d-content').addEventListener('keydown', function (e) {
+    if (e.isComposing || e.keyCode === 229) return;
+    var mod = HOTKEY_IS_MAC ? e.metaKey && !e.ctrlKey : e.ctrlKey;
+    if (!mod || e.altKey) return;
+    var sel;
+    if (e.shiftKey) {
+      // e.code, not e.key: Shift turns the digit keys into layout-dependent symbols.
+      if (e.code === 'Period') sel = 'md-quote';
+      else if (e.code === 'Digit7') sel = 'md-ordered-list';
+      else if (e.code === 'Digit8') sel = 'md-unordered-list';
+    } else {
+      var k = e.key.toLowerCase();
+      if (k === 'b') sel = 'md-bold';
+      else if (k === 'i') sel = 'md-italic';
+      else if (k === 'e') sel = 'md-code';
+      else if (k === 'k') sel = 'md-link';
+    }
+    if (!sel) return;
+    e.preventDefault();
+    var btn = document.querySelector(sel);
+    if (btn) btn.click();
+  });
+
+  // Enter inside a list item continues the list; Enter on an empty item ends it.
+  // Skipped during IME composition so Chinese input is never intercepted.
+  $('#d-content').addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || e.isComposing || e.keyCode === 229) return;
+    if (e.shiftKey || e.metaKey || e.ctrlKey || e.altKey) return;
+    var el = e.target;
+    var pos = el.selectionStart;
+    if (pos !== el.selectionEnd) return;
+    var lineStart = el.value.lastIndexOf('\n', pos - 1) + 1;
+    var m = el.value.slice(lineStart, pos).match(/^(\s*)(?:([-*])|(\d+)\.)\s(.*)$/);
+    if (!m) return;
+    e.preventDefault();
+    if (!m[4]) {
+      // Empty item: end the list by deleting the dangling marker.
+      el.setSelectionRange(lineStart, pos);
+      document.execCommand('delete');
+      return;
+    }
+    var marker = m[2] ? m[2] + ' ' : (parseInt(m[3], 10) + 1) + '. ';
+    // execCommand keeps the native undo stack and fires 'input' for autosave.
+    if (!document.execCommand('insertText', false, '\n' + m[1] + marker)) {
+      var ins = '\n' + m[1] + marker;
+      el.value = el.value.slice(0, pos) + ins + el.value.slice(pos);
+      el.setSelectionRange(pos + ins.length, pos + ins.length);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  });
   $('#d-summary').addEventListener('input', function (e) { onDraftInput('summary', e.target.value); });
   $('#d-tags').addEventListener('input', function (e) { onDraftInput('tags', e.target.value); });
   $('#import-file').addEventListener('change', function (e) {
