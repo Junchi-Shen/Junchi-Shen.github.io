@@ -81,6 +81,7 @@
         <input class="editor-title" id="d-title" placeholder="文章标题 · Title">
         <!-- GitHub's markdown-toolbar-element (vendored): buttons decorate the
              textarea below; shortcuts are wired in blog.js via button.click(). -->
+        <div class="editor-mdrow">
         <markdown-toolbar for="d-content" class="editor-mdbar">
           <md-header level="2" class="mdbtn mdbar-txt" aria-label="二级标题 · Heading 2" title="二级标题 · Heading 2">H2</md-header>
           <md-header level="3" class="mdbtn mdbar-txt" aria-label="三级标题 · Heading 3" title="三级标题 · Heading 3">H3</md-header>
@@ -96,7 +97,12 @@
           <md-unordered-list class="mdbtn" aria-label="无序列表 · Bulleted list" title="无序列表 · Bulleted list — ⌘⇧8 / Ctrl+Shift+8"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5.75 2.5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5Zm0 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5Zm0 5h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5ZM2 14a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-6a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM2 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"/></svg></md-unordered-list>
           <md-ordered-list class="mdbtn" aria-label="有序列表 · Numbered list" title="有序列表 · Numbered list — ⌘⇧7 / Ctrl+Shift+7"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 3.25a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5A.75.75 0 0 1 5 3.25Zm0 5a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5A.75.75 0 0 1 5 8.25Zm0 5a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1-.75-.75ZM.924 10.32a.5.5 0 0 1-.851-.525l.001-.001.001-.002.002-.004.007-.011c.097-.144.215-.273.348-.384.228-.19.588-.392 1.068-.392.468 0 .858.181 1.126.484.259.294.377.673.377 1.038 0 .987-.686 1.495-1.156 1.845l-.047.035c-.303.225-.522.4-.654.597h1.357a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5c0-1.005.692-1.52 1.167-1.875l.035-.025c.531-.396.8-.625.8-1.078a.57.57 0 0 0-.128-.376C1.806 10.068 1.695 10 1.5 10a.658.658 0 0 0-.429.163.835.835 0 0 0-.144.153ZM2.003 2.5V6h.503a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1h.503V3.308l-.28.14a.5.5 0 0 1-.446-.895l1.003-.5a.5.5 0 0 1 .723.447Z"/></svg></md-ordered-list>
         </markdown-toolbar>
-        <textarea class="editor-body" id="d-content" placeholder="在这里写正文，空行分段 · Write here; blank lines make paragraphs"></textarea>
+        <button type="button" class="mdbtn mdbar-txt editor-split-toggle" data-act="toggle-split" aria-pressed="true" title="边写边看渲染结果 · Render while you type"><span data-en>Live preview</span><span data-sep> </span><span data-zh lang="zh">实时预览</span></button>
+        </div>
+        <div class="editor-split split-on" id="editor-split">
+          <textarea class="editor-body" id="d-content" placeholder="在这里写正文，空行分段 · Write here; blank lines make paragraphs"></textarea>
+          <div class="editor-preview article-body" id="d-preview" aria-hidden="true"></div>
+        </div>
         <p class="editor-hint">Markdown: ## <span data-en>heading</span><span data-sep>/</span><span data-zh lang="zh">标题</span> &nbsp; **<span data-en>bold</span><span data-sep>/</span><span data-zh lang="zh">粗体</span>** &nbsp; *<span data-en>italic</span><span data-sep>/</span><span data-zh lang="zh">强调</span>* &nbsp; ~~<span data-en>strike</span><span data-sep>/</span><span data-zh lang="zh">删除</span>~~ &nbsp; - <span data-en>list</span><span data-sep>/</span><span data-zh lang="zh">列表</span> &nbsp; 1. <span data-en>numbered</span><span data-sep>/</span><span data-zh lang="zh">有序</span> &nbsp; &gt; <span data-en>quote</span><span data-sep>/</span><span data-zh lang="zh">引用</span> &nbsp; [<span data-en>link</span><span data-sep>/</span><span data-zh lang="zh">链接</span>](url) &nbsp; `code` &nbsp; ``` <span data-en>code block</span><span data-sep>/</span><span data-zh lang="zh">代码块</span> &nbsp; ---</p>
       </div>
       <div class="editor-side">

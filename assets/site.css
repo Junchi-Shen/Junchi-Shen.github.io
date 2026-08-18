@@ -361,32 +361,53 @@ html[data-lang="zh"] [data-sep] { display: none !important; }
   padding: 0 0 18px; outline: none;
 }
 .editor-title:focus { border-bottom-color: var(--color-accent); }
-.editor-mdbar {
-  display: flex; gap: 2px; align-items: center; flex-wrap: wrap;
+.editor-mdrow {
+  display: flex; gap: 8px; align-items: center;
   position: sticky; top: 0; z-index: 2;
   background: var(--color-bg); margin-top: 21px; padding: 7px 0;
 }
-.editor-mdbar .sep { width: 1px; height: 18px; background: var(--color-divider); margin: 0 8px; flex: none; }
+.editor-mdbar { display: flex; gap: 2px; align-items: center; flex-wrap: wrap; flex: 1; }
+.editor-mdrow .sep { width: 1px; height: 18px; background: var(--color-divider); margin: 0 8px; flex: none; }
 /* md-* custom elements default to display:inline (zero-size buttons are even
    skipped by the toolbar's arrow-key navigation) — style them like .btn-ghost. */
-.editor-mdbar .mdbtn {
+.editor-mdrow .mdbtn {
   display: inline-flex; align-items: center; justify-content: center;
   width: 32px; height: 32px; flex: none; cursor: pointer;
   border-radius: var(--radius-md);
   color: color-mix(in srgb, var(--color-text) 72%, transparent);
 }
-.editor-mdbar .mdbtn:hover {
+.editor-mdrow .mdbtn:hover {
   color: var(--color-accent-700);
   background: color-mix(in srgb, var(--color-accent) 10%, transparent);
 }
-.editor-mdbar .mdbtn:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
-.editor-mdbar .mdbtn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-.editor-mdbar .mdbtn svg { display: block; }
-.editor-mdbar .mdbar-txt {
+.editor-mdrow .mdbtn:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
+.editor-mdrow .mdbtn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.editor-mdrow .mdbtn svg { display: block; }
+.editor-mdrow .mdbar-txt {
   font-family: var(--font-heading); font-weight: var(--font-heading-weight);
   font-size: 13px; letter-spacing: 0.04em;
 }
-.editor-mdbar + .editor-body { margin-top: 14px; }
+/* live-preview toggle sits at the right end of the toolbar row */
+.editor-mdrow .editor-split-toggle {
+  width: auto; padding: 0 10px; border: 0; background: transparent; font-size: 12px;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  white-space: nowrap; flex: none;
+}
+.editor-mdrow .editor-split-toggle[aria-pressed="true"] {
+  color: var(--color-accent-700);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+/* write pane + live preview. The preview reuses .article-body so what you see
+   is exactly what the published article renders. */
+.editor-split { margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 28px; }
+.editor-split .editor-body { margin-top: 0; }
+.editor-preview { display: none; }
+.editor-split.split-on { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.editor-split.split-on .editor-preview {
+  display: block; min-height: 460px; overflow: auto;
+  border-left: 1px solid var(--color-divider); padding-left: 28px;
+}
 .editor-body {
   display: block; width: 100%; box-sizing: border-box; min-height: 460px; margin-top: 28px;
   font-family: var(--font-body); font-size: 16.5px; line-height: 30px;
@@ -520,6 +541,13 @@ html[data-lang="zh"] [data-sep] { display: none !important; }
   .portrait { justify-self: start; width: min(260px, 62%); }
   .editor-grid { grid-template-columns: minmax(0, 1fr); gap: 42px 0; }
   .editor-side { border-left: 0; padding-left: 0; position: static; border-top: 1px solid var(--color-divider); padding-top: 28px; }
+  /* narrow screens: preview stacks under the write pane */
+  .editor-split.split-on { grid-template-columns: minmax(0, 1fr); }
+  .editor-split.split-on .editor-preview {
+    border-left: 0; padding-left: 0; margin-top: 21px;
+    border-top: 1px solid var(--color-divider); padding-top: 21px;
+    min-height: 0; max-height: 45vh; height: auto !important;
+  }
   .skills { grid-template-columns: minmax(0, 1fr); gap: 8px 0; }
   .skills dd { margin-bottom: 16px; }
 }

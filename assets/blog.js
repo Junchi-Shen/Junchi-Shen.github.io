@@ -9,6 +9,7 @@
 (function () {
   var POSTS_KEY = 'jsblog-posts';
   var OWNER_KEY = 'jsblog-owner';
+  var SPLIT_KEY = 'jsblog-split';
   var AUTOSAVE_MS = 1200;
 
   var S = {
@@ -184,6 +185,7 @@
     S.saved = false;
     show($('#d-saved'), false);
     renderCounts();
+    if (field === 'content') renderLivePreview();
     clearTimeout(autosaveTimer);
     autosaveTimer = setTimeout(function () {
       if (S.view !== 'editor') return;
@@ -315,6 +317,40 @@
     S._prev = prev; S._next = next;
   }
 
+  /* ── live preview ────────────────────────────────────────────────────── */
+
+  function splitOn() {
+    try { return localStorage.getItem(SPLIT_KEY) !== '0'; } catch (e) { return true; }
+  }
+
+  var _pvRaf = null;
+  function paintPreview() { $('#d-preview').innerHTML = mdRender(S.draft.content); }
+  function renderLivePreview() {
+    if (!splitOn()) return;
+    if (_pvRaf) cancelAnimationFrame(_pvRaf);
+    // rAF coalesces keystrokes but never fires in a hidden tab, which would
+    // leave a stale preview on return — paint directly there instead.
+    if (document.hidden) { paintPreview(); return; }
+    _pvRaf = requestAnimationFrame(paintPreview);
+  }
+
+  // Side-by-side, the preview column tracks the textarea's height (which the
+  // user can drag); stacked on narrow screens, CSS caps it instead.
+  function syncPreviewSize() {
+    var ta = $('#d-content'), pv = $('#d-preview');
+    if (!ta || !pv || !ta.offsetHeight) return;
+    if (window.matchMedia('(max-width: 900px)').matches) { pv.style.height = ''; return; }
+    pv.style.height = ta.offsetHeight + 'px';
+  }
+
+  function applySplit() {
+    var on = splitOn();
+    $('#editor-split').classList.toggle('split-on', on);
+    var btn = $('[data-act="toggle-split"]');
+    if (btn) btn.setAttribute('aria-pressed', String(on));
+    if (on) { renderLivePreview(); syncPreviewSize(); }
+  }
+
   function fillEditor() {
     $('#d-title').value = S.draft.title;
     $('#d-content').value = S.draft.content;
@@ -322,6 +358,7 @@
     $('#d-tags').value = S.draft.tags;
     show($('#d-saved'), S.saved);
     renderCounts();
+    applySplit();
   }
 
   function render() {
@@ -429,6 +466,10 @@
           renderList();
         }
         break;
+      case 'toggle-split':
+        try { localStorage.setItem(SPLIT_KEY, splitOn() ? '0' : '1'); } catch (err) {}
+        applySplit();
+        break;
       case 'save': if (commitDraft()) markSaved(); break;
       case 'preview': {
         var p = commitDraft();
@@ -504,6 +545,19 @@
     var btn = document.querySelector(sel);
     if (btn) btn.click();
   });
+
+  // Keep the preview scrolled proportionally to the write pane.
+  $('#d-content').addEventListener('scroll', function () {
+    var pv = $('#d-preview');
+    if (!splitOn() || !pv) return;
+    var max = this.scrollHeight - this.clientHeight;
+    if (max <= 0) return;
+    pv.scrollTop = (this.scrollTop / max) * (pv.scrollHeight - pv.clientHeight);
+  });
+  if (window.ResizeObserver) {
+    new ResizeObserver(syncPreviewSize).observe($('#d-content'));
+  }
+  window.matchMedia('(max-width: 900px)').addEventListener('change', syncPreviewSize);
 
   // Enter inside a list item continues the list; Enter on an empty item ends it.
   // Skipped during IME composition so Chinese input is never intercepted.
