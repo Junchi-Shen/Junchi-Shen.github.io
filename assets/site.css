@@ -552,14 +552,22 @@ html[data-lang="zh"] [data-sep] { display: none !important; }
   .skills dd { margin-bottom: 16px; }
 }
 
-@media (max-width: 760px) {
+/* .split stacks at 840px, not at the 760px breakpoint below, because its three
+   auto-fit columns stop fitting on one row at ~834px. Between those two widths
+   the third column wrapped to a second row while still drawing its left
+   divider — a stray vertical line with no column beside it. Stacking before
+   the wrap can happen is what keeps the divider rule (left border, cleared on
+   :first-child) honest. Adding a fourth column means raising this threshold. */
+@media (max-width: 840px) {
   .split > *,
   .split > *:first-child,
   .split > *:not(:first-child):not(:last-child) {
     padding: 0 0 0 0; border-left: 0;
   }
   .split > * + * { padding-top: 28px; border-top: 1px solid var(--color-divider); }
+}
 
+@media (max-width: 760px) {
   .paper, .proj { grid-template-columns: minmax(0, 1fr); gap: 10px 0; }
   .paper-meta, .proj-meta { text-align: left; }
   .proj-num { font-size: 26px; line-height: 26px; }

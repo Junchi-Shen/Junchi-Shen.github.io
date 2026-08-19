@@ -90,7 +90,9 @@
     return esc(text)
       .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, function (m, label, href) {
         // Only link schemes that can't execute script; anything else stays literal.
-        if (!/^(https?:\/\/|mailto:|\/|#)/i.test(href)) return m;
+        // The lone `/` must not match `//host`, which is a protocol-relative
+        // link off-site that would otherwise be treated as an internal path.
+        if (!/^(https?:\/\/|mailto:|\/(?!\/)|#)/i.test(href)) return m;
         var ext = /^https?:\/\//i.test(href);
         return '<a href="' + href + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + label + '</a>';
       })
