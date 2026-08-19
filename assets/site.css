@@ -340,6 +340,69 @@ html[data-lang="zh"] [data-sep] { display: none !important; }
 .post-actions .btn { font-size: 13px; }
 .post-actions .btn-del { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
 
+/* private badge — deliberately not accent-colored; it is a warning, not a feature */
+.tag-private {
+  border: 1px solid color-mix(in srgb, var(--color-text) 35%, transparent);
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+
+/* ── publish / sync bar ──────────────────────────────────────────────── */
+
+.sync-bar {
+  margin-top: 56px; padding: 21px 24px;
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+}
+.sync-head { font-family: var(--font-heading); font-size: 18px; margin: 0 0 6px; }
+.sync-note {
+  font-size: 13.5px; line-height: 22px; margin: 0 0 14px;
+  color: color-mix(in srgb, var(--color-text) 68%, transparent); max-width: 62ch;
+}
+.sync-note code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+.sync-actions { display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap; }
+.sync-state { font-size: 13px; color: color-mix(in srgb, var(--color-text) 68%, transparent); }
+.sync-state .dot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 8px; vertical-align: middle;
+}
+#sync-dirty .dot { background: var(--color-accent); }
+#sync-clean .dot { background: color-mix(in srgb, var(--color-text) 30%, transparent); }
+.sync-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.sync-buttons .btn { font-size: 13px; white-space: nowrap; }
+.sync-msg { font-size: 13px; line-height: 22px; margin: 12px 0 0; }
+.sync-msg:empty { margin: 0; }
+.sync-msg.is-ok { color: var(--color-accent-700); }
+.sync-msg.is-err { color: #a8442a; }
+.sync-msg.is-busy { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+
+/* visibility toggle in the editor sidebar */
+.vis-seg { display: inline-flex; }
+.vis-seg button {
+  font: inherit; font-size: 12.5px; line-height: 1; color: inherit;
+  background: transparent; border: 0; cursor: pointer; padding: 8px 12px;
+}
+.vis-seg button + button { border-left: 1px solid var(--color-divider); }
+.vis-seg button:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.vis-seg button[aria-pressed="true"] { box-shadow: inset 0 0 0 1px var(--color-accent); color: var(--color-accent-700); }
+.vis-hint {
+  font-size: 12.5px; line-height: 19px; margin: 8px 0 0;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+.vis-hint.is-public { color: var(--color-accent-700); }
+
+.pv-bar .state.is-public { color: var(--color-accent-700); }
+
+/* token dialog */
+.token-dialog { width: min(560px, 100%); max-height: 88vh; overflow-y: auto; }
+.token-dialog .dialog-body { font-size: 13.5px; line-height: 22px; opacity: 1; }
+.token-dialog ul { margin: 8px 0; padding-left: 20px; }
+.token-dialog code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+.token-status { font-size: 13px; margin: 10px 0 0; color: var(--color-accent-700); min-height: 20px; }
+.token-warn {
+  font-size: 12.5px; line-height: 20px; margin: 14px 0 0;
+  padding-left: 14px; border-left: 2px solid var(--color-accent);
+  color: color-mix(in srgb, var(--color-text) 62%, transparent);
+}
+
 .blog-backup {
   display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
   margin-top: 56px; padding-top: 21px; border-top: 1px solid var(--color-divider);

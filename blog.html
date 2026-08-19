@@ -45,8 +45,8 @@
       <div class="blog-filters">
         <span class="owner-only hidden" style="display:contents">
           <button type="button" class="tag" data-status="all"><span data-en>All</span><span data-sep> </span><span data-zh lang="zh">全部</span></button>
-          <button type="button" class="tag" data-status="pub"><span data-en>Published</span><span data-sep> </span><span data-zh lang="zh">已发布</span></button>
-          <button type="button" class="tag" data-status="draft"><span data-en>Drafts</span><span data-sep> </span><span data-zh lang="zh">草稿</span></button>
+          <button type="button" class="tag" data-status="pub"><span data-en>Public</span><span data-sep> </span><span data-zh lang="zh">公开</span></button>
+          <button type="button" class="tag" data-status="private"><span data-en>Private</span><span data-sep> </span><span data-zh lang="zh">私密</span></button>
           <span class="sep"></span>
         </span>
         <span id="tag-list" style="display:contents"></span>
@@ -63,6 +63,37 @@
     <p class="blog-nomatch hidden" id="nomatch"><span data-en>Nothing matches the current filter.</span><span data-sep> · </span><span data-zh lang="zh">没有符合筛选条件的文章。</span></p>
 
     <div id="posts" style="margin-top:28px"></div>
+
+    <!-- ── publish / sync ─────────────────────────────────────────────── -->
+    <div class="sync-bar owner-only hidden" id="sync-bar">
+      <div class="sync-need-token hidden" id="sync-need-token">
+        <p class="sync-head">还没连上 GitHub · Not connected</p>
+        <p class="sync-note">
+          公开文章要写进 <code>Junchi-Shen.github.io</code>，私密文章写进私有仓库
+          <code>blog-private</code>。两边都要一个 GitHub 令牌才能写。
+        </p>
+        <button type="button" class="btn btn-primary" data-act="setup-token">连接 GitHub · Connect</button>
+      </div>
+
+      <div class="sync-actions hidden" id="sync-actions">
+        <div class="sync-state">
+          <span class="sync-dirty hidden" id="sync-dirty">
+            <span class="dot"></span>本地有改动尚未发布 · Unpublished changes
+          </span>
+          <span class="sync-clean hidden" id="sync-clean">
+            <span class="dot"></span>已与仓库同步 · In sync
+          </span>
+        </div>
+        <div class="sync-buttons">
+          <button type="button" class="btn btn-primary" data-act="publish-all">
+            <span data-en>Publish</span><span data-sep> </span><span data-zh lang="zh">发布到 GitHub</span>
+          </button>
+          <button type="button" class="btn btn-ghost" data-act="reload-repos">从仓库重新拉取</button>
+          <button type="button" class="btn btn-ghost" data-act="forget-token">清除令牌</button>
+        </div>
+      </div>
+      <p class="sync-msg" id="sync-msg"></p>
+    </div>
 
     <div class="blog-backup owner-only hidden">
       <span class="label"><span data-en>Backup</span><span data-sep> · </span><span data-zh lang="zh">备份</span></span>
@@ -114,6 +145,14 @@
           <label for="d-tags"><span data-en>Tags, comma-separated</span><span data-sep> · </span><span data-zh lang="zh">标签（逗号分隔）</span></label>
           <input class="input" id="d-tags" placeholder="quantum, QEC">
         </div>
+        <div class="field" style="margin-top:18px">
+          <label><span data-en>Visibility</span><span data-sep> · </span><span data-zh lang="zh">谁能看到</span></label>
+          <div class="seg vis-seg" role="group">
+            <button type="button" data-vis="private">私密 Private</button>
+            <button type="button" data-vis="public">公开 Public</button>
+          </div>
+          <p class="vis-hint" id="vis-hint"></p>
+        </div>
         <p class="editor-count"><span id="d-chars">0</span> <span data-en>characters</span><span data-sep> · </span><span data-zh lang="zh">字</span> · ≈<span id="d-read">1</span> <span data-en>min read</span><span data-sep> · </span><span data-zh lang="zh">分钟</span></p>
         <p class="editor-saved hidden" id="d-saved"><span data-en>Draft autosaved</span><span data-sep> · </span><span data-zh lang="zh">草稿已自动保存</span> <span id="d-saved-at"></span></p>
         <div class="editor-actions">
@@ -130,13 +169,14 @@
     <div class="pv-bar">
       <button type="button" class="btn btn-ghost" data-act="back" style="margin-left:calc(-1 * var(--space-1))">← <span data-en>Back to blog</span><span data-sep> </span><span data-zh lang="zh">返回博客</span></button>
       <div class="group hidden" id="pv-draft-bar">
-        <span class="state"><span data-en>Preview — not published yet</span><span data-sep> · </span><span data-zh lang="zh">预览，尚未发布</span></span>
+        <span class="state"><span data-en>Private — only you can see this</span><span data-sep> · </span><span data-zh lang="zh">私密，只有你能看到</span></span>
         <button type="button" class="btn btn-secondary" data-act="edit-pv"><span data-en>Back to edit</span><span data-sep> </span><span data-zh lang="zh">返回编辑</span></button>
-        <button type="button" class="btn btn-primary" data-act="publish"><span data-en>Publish</span><span data-sep> </span><span data-zh lang="zh">发布</span></button>
+        <button type="button" class="btn btn-primary" data-act="make-public"><span data-en>Make public</span><span data-sep> </span><span data-zh lang="zh">设为公开</span></button>
       </div>
       <div class="group hidden" id="pv-pub-bar">
+        <span class="state is-public"><span data-en>Public — anyone can read this</span><span data-sep> · </span><span data-zh lang="zh">公开，所有人可见</span></span>
         <button type="button" class="btn btn-secondary" data-act="edit-pv"><span data-en>Edit</span><span data-sep> </span><span data-zh lang="zh">编辑</span></button>
-        <button type="button" class="btn btn-ghost" data-act="unpublish"><span data-en>Unpublish</span><span data-sep> </span><span data-zh lang="zh">撤回为草稿</span></button>
+        <button type="button" class="btn btn-ghost" data-act="make-private"><span data-en>Make private</span><span data-sep> </span><span data-zh lang="zh">改回私密</span></button>
       </div>
     </div>
     <article class="article">
@@ -163,6 +203,39 @@
     </article>
   </section>
 
+  <!-- ── GitHub token setup ───────────────────────────────────────────── -->
+  <div class="dialog-backdrop hidden" id="token-dialog">
+    <div class="dialog token-dialog">
+      <p class="dialog-title">连接 GitHub · Connect GitHub</p>
+      <div class="dialog-body">
+        <p>需要一个 <strong>fine-grained personal access token</strong>，只授权这两个仓库：</p>
+        <ul>
+          <li><code>Junchi-Shen/Junchi-Shen.github.io</code> —— 存公开文章</li>
+          <li><code>Junchi-Shen/blog-private</code> —— 存私密文章</li>
+        </ul>
+        <p>权限选 <strong>Repository permissions → Contents → Read and write</strong>，其它一律不给。</p>
+        <p>
+          <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">
+            去 GitHub 生成令牌 ↗</a>
+        </p>
+        <div class="field" style="margin-top:14px">
+          <label for="token-input">把令牌粘贴到这里（只存在这台电脑的浏览器里，不会上传到任何地方）</label>
+          <input class="input" id="token-input" type="password" autocomplete="off"
+                 spellcheck="false" placeholder="github_pat_...">
+        </div>
+        <p class="token-status" id="token-status"></p>
+        <p class="token-warn">
+          这个令牌能写你这两个仓库。它只存在本机浏览器的 localStorage 里；
+          在别人的电脑上别粘贴，用完可以随时「清除令牌」。建议给它设一个过期时间。
+        </p>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-secondary" data-act="cancel-token">取消</button>
+        <button type="button" class="btn btn-primary" data-act="save-token">验证并保存</button>
+      </div>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <span>Junchi Shen — Blog</span>
     <span class="footer-lock">© 2026
@@ -175,6 +248,7 @@
 
 <script src="assets/site.js"></script>
 <script src="assets/auth.js"></script>
+<script src="assets/sync.js"></script>
 <script src="assets/vendor/markdown-toolbar-element.js"></script>
 <script src="assets/blog.js"></script>
 </body>

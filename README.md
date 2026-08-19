@@ -15,8 +15,11 @@ develop.html        开发文档 · how to edit this site
 assets/ds.css       Classical design system — tokens + component classes (from the handoff, unchanged)
 assets/site.css     页面样式 · page styles + responsive rules
 assets/site.js      中英切换 · the bilingual switch
-assets/blog.js      博客逻辑 · blog logic (localStorage-backed)
+assets/blog.js      博客逻辑 · blog logic (editor, markdown, live preview)
+assets/sync.js      公开/私密两个仓库的读写 · the public/private repo split
 assets/portrait.jpg 个人照片 —— 放进来即可显示，没有就显示占位框
+content/posts.json  公开文章（编辑器生成，全世界可读）
+tools/publish.mjs   不用浏览器令牌的发布脚本
 ```
 
 ## 中英切换
@@ -26,14 +29,37 @@ Nav 里的 `双语 / EN / 中` 三档，选择记在 localStorage。设计稿把
 
 ## 博客怎么用
 
-文章存在**这台电脑的这个浏览器**的 localStorage 里（`jsblog-posts`），没有服务器。
+每篇文章有一个可见性，决定它写进**哪个仓库**：
+
+| 可见性 | 存到 | 谁能看到 |
+|---|---|---|
+| **公开 Public** | 本仓库 `content/posts.json` | **所有人**，访客静态 fetch，不需登录 |
+| **私密 Private** | `Junchi-Shen/blog-private`（私有仓库） | 只有你，访客的浏览器根本收不到 |
+
+私密文章之所以必须待在另一个仓库：本仓库是公开的，里面**任何**文件一条 `curl`
+就能读，删了也留在 git 历史里。「放公开仓库但界面不显示」等于没有私密。
+
+发布（浏览器 → 仓库需要一座桥，两条路任选）：
+
+1. **浏览器直连**——列表页「连接 GitHub」粘一个 fine-grained token
+   （只授权那两个仓库、只给 Contents 读写），之后点「发布到 GitHub」一键写两边。
+   令牌只存在本机浏览器的 localStorage。
+2. **不想在浏览器放令牌**——点「导出 JSON」，然后 `node tools/publish.mjs`。
+   私密那半需要先把 `blog-private` 克隆成本项目的同级目录。
+
+两条路共用同一道硬检查：`visibility` 不严格等于 `'public'` 的文章一律不许进
+`content/posts.json`，检测到就报错中止而不是悄悄过滤；没有 `visibility` 字段的
+按私密处理。
+
+本机 localStorage 仍是工作副本，和仓库按 `updatedAt` 合并、新的赢。
 
 - 页脚 **作者登录**，口令见本机 `.env`（`BLOG_OWNER_PASSPHRASE`，已 gitignore）
-- 登录后出现 **写文章**、草稿筛选、编辑/删除、导出/导入
+- 登录后出现 **写文章**、公开/私密筛选、编辑/删除、发布、导出/导入
+- 新文章默认**私密**；改成公开要过一次确认（这是不可逆的：一旦推上去就进了 git 历史）
 - 正文支持 Markdown 子集：`##` `###` 标题、`**粗体**`、`*强调*`、`~~删除线~~`、
   `` `代码` ``、``` 代码块、`-` 列表、`1.` 有序列表、`>` 引用、`[链接](url)`、
   `---` 分隔线；空行分段
-- 输入时每 1.2 秒自动存草稿；草稿只有登录后可见，访客只看到已发布的文章
+- 输入时每 1.2 秒自动存到本机；私密文章只有登录后可见，访客只看到公开的
 
 ## 编辑器
 
@@ -81,15 +107,15 @@ git add -A && git commit -m "rotate owner passphrase" && git push
 `localStorage.setItem('jsblog-owner','1')` 打开作者界面。哈希的作用只有一个：
 明文不进仓库、不会被顺着 GitHub 搜到、也不会连累你在别处复用的同一串密码。
 
-之所以这样够用，是因为**没有东西需要挡** —— 文章只在你自己浏览器的
-localStorage 里，别人打开作者界面看到的是他自己的空列表，读不到你的草稿，
-也写不了任何东西回来。要真正的鉴权就必须有后端（Cloudflare Worker + KV
-那一套），到时候口令校验放服务端，前端这层就退化成纯 UI 了。
+真正把私密文章挡住的**不是这个口令，是仓库的可见性**：私密文章存在私有仓库
+`blog-private` 里，访客的浏览器压根收不到那些字节，没有 GitHub 令牌就读不到。
+口令只是决定要不要在界面上显示作者功能。
 
-**换台电脑或清缓存文章就没了**，定期用 **导出 JSON** 备份。
+**已发布的文章跨设备可用**（存在仓库里）；**还没点过「发布」的改动只在本机**，
+换电脑或清缓存就没了。列表页顶部会提示「本地有改动尚未发布」。
 
-如果以后想让文章对所有访客可见、跨设备同步，就需要一个真的后端
-（或把文章改成仓库里的 Markdown 文件在构建时生成）——现在这套是单机版。
+要更强的鉴权（比如私密文章也能在任意设备免令牌读写）就得有后端，
+Cloudflare Worker + KV 那一套 —— 目前没做。
 
 ## 部署
 

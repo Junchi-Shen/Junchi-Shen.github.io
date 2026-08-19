@@ -118,7 +118,7 @@
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <h2 id="map">1 · 文件地图</h2>
 
-  <p>一共十四个文件。想改什么先在这张表里定位。</p>
+  <p>想改什么，先在这张表里定位。</p>
 
   <div class="doc-tablewrap"><table class="table">
     <thead>
@@ -159,6 +159,16 @@
         <td><code>assets/blog.js</code></td>
         <td>博客全部逻辑：存取、渲染 Markdown、编辑器、快捷键、实时预览</td>
         <td>⚠️ 改功能来这里，改前看 §6</td>
+      </tr>
+      <tr>
+        <td><code>assets/sync.js</code></td>
+        <td>公开/私密两个仓库的读写。<strong>公开载荷的过滤守卫在这里</strong></td>
+        <td>🚫 改之前务必读懂文件头注释——改错会泄漏私密文章</td>
+      </tr>
+      <tr>
+        <td><code>content/posts.json</code></td>
+        <td>公开文章。<strong>这个文件全世界可读</strong></td>
+        <td>⚠️ 由编辑器生成，别手改</td>
       </tr>
       <tr>
         <td><code>assets/auth.js</code></td>
@@ -490,15 +500,61 @@
   <!-- ══════════════════════════════════════════════════════════════════ -->
   <h2 id="blog">6 · 博客与编辑器</h2>
 
+  <h3>文章存在哪</h3>
+  <p>每篇文章只有两种可见性，决定它被写到<strong>哪个仓库</strong>：</p>
+  <div class="doc-tablewrap"><table class="table">
+    <thead><tr><th>可见性</th><th>存到</th><th>谁能看到</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>公开 Public</strong></td>
+        <td><code>content/posts.json</code>（本仓库，公开）</td>
+        <td><strong>所有人</strong>。访客一进博客页就静态 fetch 这个文件，不需要登录。删掉之后仍然留在 git 历史里。</td>
+      </tr>
+      <tr>
+        <td><strong>私密 Private</strong></td>
+        <td><code>Junchi-Shen/blog-private</code> 的 <code>posts.json</code>（<strong>私有仓库</strong>）</td>
+        <td>只有你。这个仓库不部署、访客的浏览器根本收不到，只能拿你的 GitHub 令牌通过 API 读。</td>
+      </tr>
+    </tbody>
+  </table></div>
   <div class="note warn">
-    <span class="label">先搞清楚这件事</span>
+    <span class="label">为什么非要开第二个仓库</span>
     <p>
-      <strong>文章存在你自己浏览器的 localStorage 里，不在仓库里、不在服务器上。</strong>
-      访客打开博客页看到的是他自己的空列表——你写的东西别人看不到，你换台电脑也看不到。
-      这是当前架构的硬限制。所以：<strong>定期用列表页的「导出 JSON」备份</strong>。
-      想让文章真正公开，得改成「文章进仓库」或者接后端，那是另一项工程。
+      因为本仓库是<strong>公开</strong>的。公开仓库里的任何文件，一条
+      <code>curl</code> 就能读，不需要登录、不需要浏览器，删了也还在 git 历史里。
+      所以「私密文章放公开仓库里但界面上不显示」等于没有私密——UI 只是没画出来，
+      字节照样发给了每一个访客。私密文章必须待在另一个私有仓库，这条没有折中余地。
     </p>
   </div>
+
+  <h3>发布流程</h3>
+  <p>
+    静态站的 JS 写不了文件，所以「浏览器 → 仓库」这一步需要一座桥。有两条路，任选：
+  </p>
+  <ol>
+    <li>
+      <strong>浏览器直连（默认）</strong>——列表页的「连接 GitHub」里粘一个
+      fine-grained token（只授权那两个仓库、只给 Contents 读写），之后点
+      <strong>「发布到 GitHub」</strong>一键写两个仓库。令牌只存在本机浏览器。
+    </li>
+    <li>
+      <strong>不想在浏览器放令牌</strong>——点「导出 JSON」，然后
+      <code>node tools/publish.mjs</code>。脚本自己拆分公开/私密、写文件、commit、push。
+      私密那半需要先把 <code>blog-private</code> 克隆成本项目的同级目录。
+    </li>
+  </ol>
+  <p>
+    两条路都有同一道硬检查：<strong>凡是 <code>visibility</code> 不严格等于
+    <code>'public'</code> 的文章，一律不允许进 <code>content/posts.json</code></strong>，
+    检测到就直接报错中止而不是悄悄过滤——能走到那一步说明上游已经坏了，
+    悄悄过滤只会把 bug 藏起来。没写 <code>visibility</code> 字段的文章一律按私密处理。
+  </p>
+  <p>
+    本机浏览器的 localStorage 仍然是工作副本（离线也能写），它和仓库<strong>按
+    <code>updatedAt</code> 合并，新的赢</strong>，所以在另一台电脑发布过的修改
+    不会被这台机器上的旧副本覆盖。列表页顶部会显示「本地有改动尚未发布」，
+    别忘了点发布。
+  </p>
 
   <h3>三个视图</h3>
   <p>
