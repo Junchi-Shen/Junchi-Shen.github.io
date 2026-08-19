@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "note": "Public blog posts. Written by tools/publish.mjs — do not hand-edit. Everything in this file is world-readable, including in git history after deletion.",
+  "generatedAt": "2026-08-19T09:12:02.070Z",
+  "posts": [
+    {
+      "id": 1,
+      "title": "公开的",
+      "visibility": "public",
+      "content": "hello",
+      "date": "2026-08-01T00:00:00Z"
+    }
+  ]
+}
