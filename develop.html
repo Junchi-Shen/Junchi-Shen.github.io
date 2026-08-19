@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh" data-lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>开发文档 — Junchi Shen</title>
+<meta name="description" content="这个站怎么改：哪里加、哪里减、哪里别动。">
+<!-- 这是自用维护文档，不进搜索结果 -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/ds.css">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+  /* 只有这一页用得到的样式，就不去污染 site.css 了 */
+  .doc { max-width: 940px; }
+  .doc h2 {
+    font-family: var(--font-heading); font-weight: 400; font-size: 32px; line-height: 1.15;
+    letter-spacing: -0.008em; margin: 70px 0 0; padding-top: 28px;
+    border-top: 1px solid var(--color-divider);
+  }
+  .doc h2:first-of-type { margin-top: 42px; }
+  .doc h3 {
+    font-family: var(--font-heading); font-weight: 400; font-size: 22px; line-height: 1.25;
+    margin: 35px 0 12px;
+  }
+  .doc p { font-size: 15.5px; line-height: 28px; max-width: 68ch; margin: 0 0 14px;
+    color: color-mix(in srgb, var(--color-text) 82%, transparent); }
+  .doc ul, .doc ol { font-size: 15.5px; line-height: 28px; max-width: 68ch;
+    margin: 0 0 14px; padding-left: 22px;
+    color: color-mix(in srgb, var(--color-text) 82%, transparent); }
+  .doc li { margin-bottom: 6px; }
+  .doc strong { font-weight: 600; color: var(--color-text); }
+  .doc code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.86em;
+    background: var(--color-neutral-200); border-radius: var(--radius-sm); padding: 1.5px 6px;
+    color: var(--color-accent-800); word-break: break-word;
+  }
+  .doc pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px;
+    line-height: 21px; background: var(--color-neutral-200); border-radius: var(--radius-md);
+    padding: 16px 18px; overflow-x: auto; margin: 0 0 18px;
+    border-left: 2px solid var(--color-accent-300);
+  }
+  .doc pre code { background: transparent; padding: 0; color: var(--color-text); font-size: inherit; }
+  /* 表格可能比窄屏宽——让它在自己的盒子里横滚，而不是把整页撑宽 */
+  .doc-tablewrap { overflow-x: auto; margin-bottom: 21px; }
+  .doc .table { margin-bottom: 0; min-width: 100%; }
+  .doc .table td code { font-size: 12px; }
+  .doc .table td:first-child { white-space: nowrap; }
+  .doc .table td:not(:first-child) { min-width: 22ch; }
+
+  /* 目录 */
+  .doc-toc { margin: 35px 0 0; padding: 21px 24px; border: 1px solid var(--color-divider); border-radius: var(--radius-md); }
+  .doc-toc ol { columns: 2; column-gap: 42px; margin: 0; padding-left: 20px; font-size: 14px; line-height: 26px; }
+  .doc-toc a { text-decoration: none; }
+  .doc-toc a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 620px) { .doc-toc ol { columns: 1; } }
+
+  /* 提示条：注意 / 别动 */
+  .note {
+    border-left: 2px solid var(--color-accent); padding: 2px 0 2px 18px; margin: 0 0 18px;
+    max-width: 68ch;
+  }
+  .note.warn { border-left-color: #a8442a; }
+  .note p:last-child { margin-bottom: 0; }
+  .note .label {
+    display: block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--color-accent-700); margin-bottom: 4px;
+  }
+  .note.warn .label { color: #a8442a; }
+
+  /* 「想做什么 → 去哪」速查 */
+  .doc-jump { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1px;
+    background: var(--color-divider); border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+    overflow: hidden; margin: 21px 0; }
+  .doc-jump a { display: block; padding: 14px 16px; background: var(--color-bg); text-decoration: none; color: inherit; }
+  .doc-jump a:hover { background: var(--color-neutral-100); }
+  .doc-jump .what { display: block; font-size: 14px; line-height: 20px; }
+  .doc-jump .where { display: block; font-size: 12px; line-height: 18px; margin-top: 3px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--color-accent-700); }
+</style>
+</head>
+<body>
+
+<nav class="nav site-nav">
+  <span class="nav-brand">Junchi Shen</span>
+  <a href="index.html">主页</a>
+  <a href="blog.html">博客</a>
+  <a href="#" aria-current="page">开发文档</a>
+</nav>
+
+<div class="wrap doc">
+
+  <section style="padding:70px 0 0">
+    <span class="kicker">Maintenance · 开发文档</span>
+    <h1 class="blog-title">改这个站</h1>
+    <p style="font-size:17px;line-height:29px;margin-top:21px">
+      哪里加、哪里减、哪里别动。这个站是纯静态的 HTML + CSS + JS，<strong>没有构建步骤</strong>——
+      改完文件直接 <code>git push</code>，一分钟后线上就是新的。不需要装任何东西。
+    </p>
+
+    <div class="doc-toc">
+      <ol>
+        <li><a href="#map">文件地图：每个文件管什么</a></li>
+        <li><a href="#content">改内容：加一篇论文 / 一个项目</a></li>
+        <li><a href="#remove">减内容：删条目、删整段</a></li>
+        <li><a href="#bilingual">双语机制（改文案前必读）</a></li>
+        <li><a href="#look">改外观：颜色、字体、间距</a></li>
+        <li><a href="#blog">博客与编辑器</a></li>
+        <li><a href="#dont">这些别动</a></li>
+        <li><a href="#deploy">上线与排错</a></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <h2 id="map">1 · 文件地图</h2>
+
+  <p>一共十四个文件。想改什么先在这张表里定位。</p>
+
+  <div class="doc-tablewrap"><table class="table">
+    <thead>
+      <tr><th>文件</th><th>管什么</th><th>能不能随便改</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>index.html</code></td>
+        <td>主页全部内容：简介、数字、研究方向、论文、项目、Qbitbrief、教育、技能、联系</td>
+        <td>✅ 随便改，这是你最常动的文件</td>
+      </tr>
+      <tr>
+        <td><code>blog.html</code></td>
+        <td>博客页的骨架：列表 / 编辑器 / 阅读三个视图的 HTML</td>
+        <td>⚠️ 改文案可以；结构和 <code>id</code> 别动，JS 靠它们找元素</td>
+      </tr>
+      <tr>
+        <td><code>develop.html</code></td>
+        <td>就是你正在看的这页</td>
+        <td>✅ 随便改</td>
+      </tr>
+      <tr>
+        <td><code>assets/site.css</code></td>
+        <td>页面布局：栏宽、间距、响应式断点、博客与编辑器样式</td>
+        <td>✅ 改布局来这里</td>
+      </tr>
+      <tr>
+        <td><code>assets/ds.css</code></td>
+        <td>设计系统：颜色、字体、间距、按钮/标签/表格等组件</td>
+        <td>⚠️ 只改顶部 <code>:root</code> 里的变量，别改组件规则</td>
+      </tr>
+      <tr>
+        <td><code>assets/site.js</code></td>
+        <td>中英双语切换（35 行，很少需要动）</td>
+        <td>⚠️ 一般不用改</td>
+      </tr>
+      <tr>
+        <td><code>assets/blog.js</code></td>
+        <td>博客全部逻辑：存取、渲染 Markdown、编辑器、快捷键、实时预览</td>
+        <td>⚠️ 改功能来这里，改前看 §6</td>
+      </tr>
+      <tr>
+        <td><code>assets/auth.js</code></td>
+        <td>作者口令的哈希（<strong>自动生成的</strong>）</td>
+        <td>🚫 别手改，用脚本重新生成</td>
+      </tr>
+      <tr>
+        <td><code>assets/vendor/…</code></td>
+        <td>GitHub 的 Markdown 工具条组件（第三方，打过补丁）</td>
+        <td>🚫 别动，见 §7</td>
+      </tr>
+      <tr>
+        <td><code>assets/portrait.jpg</code></td>
+        <td>主页那张照片</td>
+        <td>✅ 换张同名的就行，3:4 竖构图最合适</td>
+      </tr>
+      <tr>
+        <td><code>tools/set-passphrase.mjs</code></td>
+        <td>改口令的脚本</td>
+        <td>✅ 用它，别绕过它</td>
+      </tr>
+      <tr>
+        <td><code>README.md</code></td>
+        <td>仓库说明与设计稿出处。内容和本页有重叠——<strong>改了文件结构两处都要更新</strong></td>
+        <td>✅ 随便改</td>
+      </tr>
+      <tr>
+        <td><code>.gitignore</code></td>
+        <td>哪些文件不进仓库</td>
+        <td>⚠️ 别删 <code>.env</code> 那行，删了口令明文就会被提交上去</td>
+      </tr>
+      <tr>
+        <td><code>.env</code></td>
+        <td>口令明文，<strong>只在你本机</strong>，不在仓库里</td>
+        <td>✅ 你的，但永远别提交</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h3>想做什么 → 去哪</h3>
+  <div class="doc-jump">
+    <a href="#papers-add"><span class="what">加一篇论文</span><span class="where">index.html · id="papers"</span></a>
+    <a href="#proj-add"><span class="what">加一个项目</span><span class="where">index.html · id="research"</span></a>
+    <a href="#edu-add"><span class="what">加一段学历</span><span class="where">index.html · id="education"</span></a>
+    <a href="#skills-add"><span class="what">加一行技能</span><span class="where">index.html · dl.skills</span></a>
+    <a href="#stats-add"><span class="what">改首页四个数字</span><span class="where">index.html · .stats-row</span></a>
+    <a href="#nav-add"><span class="what">加导航链接</span><span class="where">index.html · nav</span></a>
+    <a href="#remove-section"><span class="what">删掉一整段</span><span class="where">index.html · &lt;section&gt;</span></a>
+    <a href="#color"><span class="what">换主色调</span><span class="where">assets/ds.css · :root</span></a>
+    <a href="#font"><span class="what">换字体</span><span class="where">assets/site.css 顶部</span></a>
+    <a href="#pass"><span class="what">改博客口令</span><span class="where">tools/set-passphrase.mjs</span></a>
+    <a href="#md"><span class="what">加 Markdown 语法</span><span class="where">assets/blog.js · mdRender</span></a>
+    <a href="#deploy"><span class="what">上线</span><span class="where">git push</span></a>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <h2 id="content">2 · 改内容</h2>
+
+  <p>
+    主页所有内容都在 <code>index.html</code> 里，<strong>没有数据文件、没有模板引擎</strong>——
+    想加一条就复制一段现成的、改里面的字。下面每种条目给一份可直接粘贴的模板。
+  </p>
+
+  <div class="note">
+    <span class="label">通用做法</span>
+    <p>
+      先在 <code>index.html</code> 里搜索定位（比如搜 <code>id="papers"</code>），
+      复制一整个 <code>&lt;div class="paper"&gt;…&lt;/div&gt;</code> 块，粘在它下面，再改文字。
+      顺序就是显示顺序，想调整位置直接剪切粘贴整块。
+    </p>
+  </div>
+
+  <h3 id="papers-add">加一篇论文</h3>
+  <p>位置：搜 <code>id="papers"</code>。整块复制下面这段，放在最后一个 <code>&lt;div class="paper"&gt;</code> 后面：</p>
+<pre><code>&lt;div class="paper"&gt;
+  &lt;div class="paper-id"&gt;2601.12345&lt;/div&gt;
+  &lt;div&gt;
+    &lt;h3&gt;&lt;a href="https://arxiv.org/abs/2601.12345" target="_blank" rel="noopener"&gt;论文标题写这里&lt;/a&gt;&lt;/h3&gt;
+    &lt;p class="paper-note"&gt;&lt;span data-en&gt;One-line English summary.&lt;/span&gt;&lt;span data-sep&gt; · &lt;/span&gt;&lt;span data-zh lang="zh"&gt;一句话中文摘要。&lt;/span&gt;&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class="paper-meta"&gt;q-fin.PR · 2026&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+  <p>
+    三个格子分别是：左边 arXiv 编号、中间标题 + 摘要、右边分类和年份。
+    <strong>第一条的顶部金线和最后一条的底线是 CSS 自动加的</strong>
+    （<code>.paper:first-of-type</code> / <code>:last-of-type</code>），
+    所以不管你加在哪、删掉哪一条，边框都会自己接上，不用手动调。
+  </p>
+
+  <h3 id="proj-add">加一个项目</h3>
+  <p>位置：搜 <code>id="research"</code>。模板：</p>
+<pre><code>&lt;div class="proj"&gt;
+  &lt;div class="proj-num"&gt;07&lt;/div&gt;
+  &lt;div&gt;
+    &lt;h3 data-en&gt;English project title&lt;/h3&gt;
+    &lt;p class="en" data-en&gt;English description, two or three lines.&lt;/p&gt;
+    &lt;p class="zh" data-zh lang="zh"&gt;中文描述，两三行。&lt;/p&gt;
+    &lt;div class="tag-row"&gt;&lt;span class="tag tag-outline"&gt;PyTorch&lt;/span&gt;&lt;span class="tag tag-outline"&gt;CUDA&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="proj-meta"&gt;右边的状态说明&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+  <div class="note warn">
+    <span class="label">这里有个坑</span>
+    <p>
+      <code>01 02 03…</code> 这些编号是<strong>手写死的</strong>，不会自动重排。
+      删掉第 3 条，剩下的就变成 01 02 04 05 06。加减项目后记得从上到下把
+      <code>&lt;div class="proj-num"&gt;</code> 里的数字重编一遍。
+      （第一条编号自动变成金色，这个不用管。）
+    </p>
+  </div>
+
+  <h3 id="edu-add">加一段学历 / 一个研究方向</h3>
+  <p>
+    这两处都用同一个三栏容器 <code>&lt;div class="split"&gt;</code>（栏宽和分割线规则完全一样），
+    但<strong>栏内结构不同，模板不能互换</strong>。往容器里加一个 <code>&lt;div&gt;</code> 就是加一栏。
+  </p>
+
+  <p><strong>学历</strong>（搜 <code>id="education"</code>）——标题用 <code>h3</code>：</p>
+<pre><code>&lt;div&gt;
+  &lt;h3&gt;学校名 University&lt;/h3&gt;
+  &lt;p class="plain"&gt;&lt;span data-en&gt;M.S., Something&lt;/span&gt;&lt;span data-sep&gt; · &lt;/span&gt;&lt;span data-zh lang="zh"&gt;某某硕士&lt;/span&gt;&lt;/p&gt;
+  &lt;p class="courses"&gt;课程一 · 课程二 · 课程三&lt;/p&gt;
+  &lt;p class="place"&gt;City, Country&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+  <p>
+    <strong>研究方向</strong>（页面上第一个 <code>&lt;div class="split"&gt;</code>）——标题用 <code>h2</code>，
+    中文标题是单独一行 <code>.split-zh-title</code>，正文分 <code>.en</code> / <code>.zh</code> 两段：
+  </p>
+<pre><code>&lt;div&gt;
+  &lt;h2 data-en&gt;English direction title&lt;/h2&gt;
+  &lt;div class="split-zh-title" data-zh lang="zh"&gt;中文方向名&lt;/div&gt;
+  &lt;p class="en" data-en&gt;English description.&lt;/p&gt;
+  &lt;p class="zh" data-zh lang="zh"&gt;中文描述。&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+  <div class="note warn">
+    <span class="label">别把学历模板粘到研究方向里</span>
+    <p>
+      粘错了不会报错，但会静默出两个问题：标题变成 23px（<code>h3</code> 而不是 25px 的 <code>h2</code>），
+      而且裸 <code>&lt;h3&gt;</code> 没有 <code>data-en</code>，切成「中」的时候英文标题不会隐藏。
+    </p>
+  </div>
+
+  <p>
+    栏与栏之间的竖分割线是 CSS 自动加的（<code>.split &gt; *</code> 加左边框、
+    <code>:first-child</code> 清掉），所以<strong>减到两栏没问题</strong>。
+  </p>
+  <div class="note">
+    <span class="label">想加第四栏的话</span>
+    <p>
+      竖线规则只对「排在同一行」的栏成立。三栏在约 834px 以下就排不下会折行，
+      所以 <code>site.css</code> 里专门有一条 <code>@media (max-width: 840px)</code>
+      抢在折行之前把竖线换成横线。<strong>加到四栏，折行点会往上移到 1100px 左右，
+      那条 840px 就不够用了</strong>——折到第二行的那栏会拖着一条无处安放的竖线。
+      真要加第四栏，把那个 <code>840px</code> 改成 <code>1120px</code> 即可。
+    </p>
+  </div>
+
+  <h3 id="skills-add">加一行技能</h3>
+  <p>位置：搜 <code>class="skills"</code>。这是个 <code>&lt;dl&gt;</code>，一行 = 一对 <code>dt</code> + <code>dd</code>：</p>
+<pre><code>&lt;dt&gt;&lt;span data-en&gt;Category&lt;/span&gt;&lt;span data-sep&gt; · &lt;/span&gt;&lt;span data-zh lang="zh"&gt;分类名&lt;/span&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;span class="tag tag-outline"&gt;工具一&lt;/span&gt;&lt;span class="tag tag-outline"&gt;工具二&lt;/span&gt;&lt;/dd&gt;</code></pre>
+  <p>加减多少行都行，左列固定 190px 宽，标签自动换行。</p>
+
+  <h3 id="stats-add">改首页那四个数字</h3>
+  <p>位置：搜 <code>class="stats-row"</code>。每个数字是这样一块：</p>
+<pre><code>&lt;div&gt;
+  &lt;p class="stat-num"&gt;400×&lt;/p&gt;
+  &lt;p class="stat-label"&gt;&lt;span data-en&gt;GPU speedup&lt;/span&gt;&lt;span data-sep&gt; · &lt;/span&gt;&lt;span data-zh lang="zh"&gt;GPU 加速比&lt;/span&gt;&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+  <div class="note">
+    <span class="label">改数量要同时改 CSS</span>
+    <p>
+      这一排是<strong>写死四列</strong>的。想改成三个或五个，要去
+      <code>assets/site.css</code> 搜 <code>.stats-row</code>，把
+      <code>repeat(4, minmax(0, 1fr))</code> 里的 4 改掉。
+      （当初写死是因为双语标签比较长，用自动布局会把第四个挤到第二行。）
+      想让某个数字变金色，给它加 <code>class="stat-num stat-num-accent"</code>。
+    </p>
+  </div>
+
+  <h3 id="nav-add">加导航链接</h3>
+  <p>位置：<code>index.html</code> 顶部的 <code>&lt;nav&gt;</code>。跳到本页某段用 <code>#</code> 加那段的 id：</p>
+<pre><code>&lt;a href="#education"&gt;&lt;span data-en&gt;Education&lt;/span&gt;&lt;span data-sep&gt; &lt;/span&gt;&lt;span data-zh lang="zh"&gt;教育&lt;/span&gt;&lt;/a&gt;</code></pre>
+  <p>
+    要跳到别的页面就写文件名，比如 <code>href="develop.html"</code>。
+    导航栏窄屏会自动换行，链接多几个不会挤坏。
+  </p>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <h2 id="remove">3 · 减内容</h2>
+
+  <h3>删一个条目</h3>
+  <p>
+    删论文、项目、学历、技能行，就是<strong>把对应的整块 <code>&lt;div&gt;</code>（或 <code>dt</code>+<code>dd</code> 一对）删掉</strong>，
+    不用管边框和分割线，CSS 会自己接上。唯一要手动收尾的是<strong>项目编号</strong>（见上面那个坑）。
+  </p>
+
+  <h3 id="remove-section">删掉一整段</h3>
+  <p>
+    每个大板块都是一个 <code>&lt;section&gt;</code>，从 <code>&lt;section …&gt;</code> 删到对应的
+    <code>&lt;/section&gt;</code> 即可。删完记得顺手清两样东西：
+  </p>
+  <ol>
+    <li><strong>导航里指向它的链接</strong>——比如删了 <code>id="education"</code> 那段，就把 nav 里的 <code>href="#education"</code> 一并删掉，否则点了跳不动。</li>
+    <li><strong>孤立的分割线</strong>——页面里有几条 <code>&lt;hr class="rule"&gt;</code> 夹在板块之间。删掉中间某段后可能出现两条紧挨着的横线，删掉其中一条就行。</li>
+  </ol>
+  <p>
+    CSS 里对应的规则<strong>可以不删</strong>，没有元素用到它们就是几行死代码，不影响任何东西。
+    真想清干净再去 <code>site.css</code> 里删对应小节（每节都有注释标题，比如
+    <code>/* ── publications ── */</code>）。
+  </p>
+
+  <div class="note">
+    <span class="label">改错了怎么办</span>
+    <p>
+      改坏了都能退回来，但<strong>要分清文件是不是已经在 git 里</strong>：
+    </p>
+    <ul style="margin-top:8px">
+      <li><strong>已跟踪的文件</strong>，丢掉未提交的修改：<code>git restore 文件名</code>
+        （老写法 <code>git checkout -- 文件名</code> 也一样）</li>
+      <li><strong>新加的、还没 <code>git add</code> 过的文件</strong>：上面那条会报
+        <code>did not match any file(s) known to git</code>——这种直接删掉文件即可，
+        git 里本来就没有它的历史</li>
+      <li><strong>已经提交了才发现不对</strong>：<code>git revert HEAD</code> 然后 push</li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <h2 id="bilingual">4 · 双语机制</h2>
+
+  <p>
+    这是全站<strong>最容易改坏的地方</strong>，动任何文案前先看懂这三个属性：
+  </p>
+
+  <div class="doc-tablewrap"><table class="table">
+    <thead><tr><th>属性</th><th>含义</th><th>选「中」时</th><th>选「EN」时</th></tr></thead>
+    <tbody>
+      <tr><td><code>data-en</code></td><td>英文内容</td><td>隐藏</td><td>显示</td></tr>
+      <tr><td><code>data-zh</code></td><td>中文内容</td><td>显示</td><td>隐藏</td></tr>
+      <tr><td><code>data-sep</code></td><td>两者之间的分隔符 <code> · </code></td><td>隐藏</td><td>隐藏</td></tr>
+    </tbody>
+  </table></div>
+
+  <p>所以标准写法永远是三件套，缺一不可：</p>
+<pre><code>&lt;span data-en&gt;English&lt;/span&gt;&lt;span data-sep&gt; · &lt;/span&gt;&lt;span data-zh lang="zh"&gt;中文&lt;/span&gt;</code></pre>
+
+  <ul>
+    <li><strong>只有一种语言的内容</strong>（人名、机构名、工具名如 <code>Qiskit</code>）：什么属性都不要加，三种模式下都显示。</li>
+    <li><strong>整段只有中文</strong>：给整个 <code>&lt;p&gt;</code> 加 <code>data-zh lang="zh"</code>，别拆成 span。</li>
+    <li><strong>忘了写 <code>data-sep</code></strong>：双语模式下中英会直接黏在一起。</li>
+    <li><strong>忘了写 <code>lang="zh"</code></strong>：中文可能用英文字体渲染，标点间距会怪。</li>
+  </ul>
+
+  <p>
+    切换逻辑在 <code>assets/site.js</code>，靠 <code>&lt;html data-lang&gt;</code> 上的属性 + CSS
+    显示/隐藏，选择记在浏览器里。默认是双语。想改默认值，改 <code>site.js</code> 里
+    <code>read()</code> 函数返回的 <code>'bilingual'</code>。
+  </p>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <h2 id="look">5 · 改外观</h2>
+
+  <h3 id="color">颜色</h3>
+  <p>
+    全站颜色来自 <code>assets/ds.css</code> 顶部的 <code>:root</code>。
+    改这四个就能换掉整站基调，所有按钮、标签、链接、分割线跟着变：
+  </p>
+<pre><code>--color-bg:      #f3f2f2;   /* 页面底色 */
+--color-text:    #201f1d;   /* 正文颜色 */
+--color-accent:  #b68235;   /* 主色：链接、按钮、金线 */
+--color-divider: color-mix(in srgb, #201f1d 16%, transparent);  /* 所有分割线 */</code></pre>
+  <p>
+    下面还有 <code>--color-accent-100</code> 到 <code>-900</code> 九档色阶。
+    实际用到的只有三档：
+  </p>
+  <ul>
+    <li><code>-700</code>——浅底上的强调色，全站 16 处：小标题、论文编号、日期、链接 hover 等</li>
+    <li><code>-600</code>——链接 hover 色</li>
+    <li><code>-400</code>——只用了一处：qbitbrief 深色板块的小标题（<code>site.css</code> 的 <code>.qb .kicker</code>）</li>
+  </ul>
+  <p>
+    <code>-200 / -500 / -900</code> 目前<strong>没有任何地方在用</strong>，改不改都不影响页面。
+    换主色的话把这一排一起换，不然深浅关系会脱节。
+  </p>
+
+  <h3 id="font">字体</h3>
+  <p>
+    字体在 <code>assets/site.css</code> <strong>最顶上</strong>（它覆盖 ds.css 里的默认值）：
+  </p>
+<pre><code>:root {
+  --font-heading: "Cormorant Garamond", "Noto Serif SC", serif;  /* 标题 */
+  --font-body:    "Lora", "Noto Serif SC", serif;                /* 正文 */
+}</code></pre>
+  <p>
+    英文字体从 <code>ds.css</code> 第 2 行的 Google Fonts 加载，
+    中文的 Noto Serif SC 从每个 HTML 文件 <code>&lt;head&gt;</code> 里加载。
+    <strong>换字体要同时改这两处</strong>：变量名 + 对应的 Google Fonts 链接，
+    否则会静默回退到系统字体。
+  </p>
+
+  <h3>间距与布局</h3>
+  <p>
+    页面内容最宽 1200px（<code>site.css</code> 里的 <code>.wrap</code>）。
+    <strong>大部分</strong>板块的上下留白直接写在 <code>index.html</code> 那个
+    <code>&lt;section&gt;</code> 的 <code>style="padding:…"</code> 上——
+    这是从设计稿逐像素搬过来的，改之前想清楚。
+  </p>
+  <div class="note warn">
+    <span class="label">有三个例外，改 HTML 没用</span>
+    <p>
+      首屏、数字条、qbitbrief 深色板块的留白<strong>在 CSS 里</strong>，不在 HTML 上——
+      分别是 <code>site.css</code> 的 <code>.hero</code>、<code>.stats</code>、<code>.qb-inner</code> 的
+      <code>padding</code>。在 <code>index.html</code> 上给它们加 <code>style="padding:…"</code> 会被 CSS 覆盖，静默无效。
+    </p>
+  </div>
+
+  <p>四个响应式断点，都在 <code>site.css</code> 最后：</p>
+  <div class="doc-tablewrap"><table class="table">
+    <thead><tr><th>断点</th><th>发生什么</th></tr></thead>
+    <tbody>
+      <tr><td><code>900px</code></td><td>首屏变单列（照片移到文字下方并缩小）；<strong>四个数字先变 2×2</strong>；编辑器的右侧栏和实时预览都改成上下堆叠；技能表变单列；导航间距收紧</td></tr>
+      <tr><td><code>840px</code></td><td>三栏板块（研究方向、教育）堆成一列，竖分割线换成横线。<strong>这条单独一个断点</strong>，原因见上面「想加第四栏的话」</td></tr>
+      <tr><td><code>760px</code></td><td>论文行、项目行、博客文章行都改成竖排；qbitbrief 的大 Q 水印和留白缩小；文章「上一篇/下一篇」堆成一列；博客搜索框拉满宽、筛选条改左对齐</td></tr>
+      <tr><td><code>520px</code></td><td>四个数字从 2×2 再堆成一列</td></tr>
+    </tbody>
+  </table></div>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <h2 id="blog">6 · 博客与编辑器</h2>
+
+  <div class="note warn">
+    <span class="label">先搞清楚这件事</span>
+    <p>
+      <strong>文章存在你自己浏览器的 localStorage 里，不在仓库里、不在服务器上。</strong>
+      访客打开博客页看到的是他自己的空列表——你写的东西别人看不到，你换台电脑也看不到。
+      这是当前架构的硬限制。所以：<strong>定期用列表页的「导出 JSON」备份</strong>。
+      想让文章真正公开，得改成「文章进仓库」或者接后端，那是另一项工程。
+    </p>
+  </div>
+
+  <h3>三个视图</h3>
+  <p>
+    <code>blog.html</code> 里三段 <code>&lt;section&gt;</code> 同时存在，靠 JS 加减
+    <code>hidden</code> 类来切换，同一时刻只显示一个：
+  </p>
+  <div class="doc-tablewrap"><table class="table">
+    <thead><tr><th>id</th><th>是什么</th></tr></thead>
+    <tbody>
+      <tr><td><code>view-list</code></td><td>文章列表、筛选、搜索、导入导出</td></tr>
+      <tr><td><code>view-editor</code></td><td>写作界面：工具条 + 写作区 + 实时预览 + 右侧栏</td></tr>
+      <tr><td><code>view-preview</code></td><td>文章阅读页（也是发布前的预览）</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 id="pass">改口令</h3>
+  <p>明文只在本机 <code>.env</code>，线上只有哈希。改口令跑这一条：</p>
+<pre><code>cd ~/Documents/"Personal Blog"
+node tools/set-passphrase.mjs "新口令至少十二位"
+git add -A &amp;&amp; git commit -m "rotate owner passphrase" &amp;&amp; git push</code></pre>
+  <p>
+    脚本会生成新的随机 salt 和 PBKDF2 哈希写进 <code>assets/auth.js</code>。
+    <strong>别手改 <code>auth.js</code></strong>，也别把明文写进任何会提交的文件。
+    忘了口令就查 <code>cat .env</code>。
+  </p>
+  <p>
+    再说一次这个哈希<strong>挡不住任何人</strong>：静态站没有服务器验密码，
+    谁都能在控制台改 localStorage 打开作者界面。它的唯一作用是明文不进仓库。
+    之所以够用，是因为本来就没有东西需要挡——别人的浏览器里是空的。
+  </p>
+
+  <h3 id="md">加一种 Markdown 语法</h3>
+  <p>
+    渲染器是手写的（<code>assets/blog.js</code> 里的 <code>mdRender</code> 和 <code>mdInline</code>），
+    只支持用得到的那些。<strong>加新语法要改四个地方，漏一个就会不一致：</strong>
+  </p>
+  <ol>
+    <li><code>mdInline</code>（行内语法，如粗体）或 <code>mdRender</code>（块级语法，如列表）——加解析规则</li>
+    <li><code>assets/site.css</code> 里 <code>.article-body</code> 那一节——加对应样式</li>
+    <li><code>blog.html</code> 编辑器底部那行 <code>class="editor-hint"</code> 的提示文字——让自己记得住</li>
+    <li><code>blog.js</code> 里 <code>excerpt()</code> 的剥除正则
+      <code>.replace(/[#&gt;*`~-]/g, '')</code>——把新符号加进这个字符类。
+      <strong>最容易漏的一个</strong>：漏了不会报错，只是列表页摘要里会露出原始符号
+      （只影响没手写「摘要」的文章）。</li>
+  </ol>
+  <div class="note warn">
+    <span class="label">安全红线</span>
+    <p>
+      渲染器<strong>先转义、再套标签</strong>（<code>esc()</code> 函数），所以正文里写
+      <code>&lt;script&gt;</code> 只会原样显示出来。加新规则时务必保持这个顺序——
+      先把用户文本 <code>esc()</code> 掉，再拼 HTML。反过来就是 XSS。
+    </p>
+    <p>
+      链接走协议白名单：只放行 <code>http://</code>、<code>https://</code>、<code>mailto:</code>
+      以及站内相对路径 <code>/</code> 和锚点 <code>#</code>；
+      <code>javascript:</code>、<code>data:</code> 之类一律拒掉，原样显示不渲染成链接。
+      外链自动带 <code>target="_blank" rel="noopener"</code>。
+    </p>
+  </div>
+
+  <h3>工具条与快捷键</h3>
+  <p>
+    工具条按钮写在 <code>blog.html</code> 的 <code>&lt;markdown-toolbar&gt;</code> 里，
+    快捷键映射在 <code>blog.js</code> 搜 <code>HOTKEY_IS_MAC</code> 那一段。
+    加一个按钮：在工具条里加对应的 <code>&lt;md-xxx&gt;</code> 标签；
+    加一个快捷键：在那段 keydown 里多一个分支，指向对应按钮。
+  </p>
+  <p>
+    <strong>中文输入法保护</strong>：所有键盘处理开头都有
+    <code>if (e.isComposing || e.keyCode === 229) return;</code>——
+    这是防止拼音打字时回车被当成「续列表」拦截。新加键盘逻辑<strong>必须保留这一行</strong>。
+  </p>
+
+  <h3>其他能调的小东西</h3>
+  <div class="doc-tablewrap"><table class="table">
+    <thead><tr><th>想改</th><th>在 blog.js 搜</th></tr></thead>
+    <tbody>
+      <tr><td>自动保存间隔（现在 1.2 秒）</td><td><code>AUTOSAVE_MS</code></td></tr>
+      <tr><td>阅读时长算法（现在每分钟 450 字）</td><td><code>function readTime</code></td></tr>
+      <tr><td>列表里摘要截断长度（现在 150 字）</td><td><code>function excerpt</code></td></tr>
+      <tr><td>实时预览默认开还是关</td><td><code>function splitOn</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <h2 id="dont">7 · 这些别动</h2>
+
+  <div class="doc-tablewrap"><table class="table">
+    <thead><tr><th>文件</th><th>为什么</th><th>真要改的话</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>assets/ds.css</code> 的组件部分</td>
+        <td>这是设计稿导出的设计系统原件，是「这个站长什么样」的唯一事实来源。改乱了各页面就会不一致。</td>
+        <td>只动顶部 <code>:root</code> 变量。要改某个组件在某处的样子，在 <code>site.css</code> 里覆盖。</td>
+      </tr>
+      <tr>
+        <td><code>assets/vendor/markdown-toolbar-element.js</code></td>
+        <td>GitHub 的第三方组件，<strong>打过两个本地补丁</strong>（去掉 ESM export 让它免构建加载；斜体 <code>_x_</code> 改成 <code>*x*</code> 匹配我们的渲染器）。直接下新版会把补丁冲掉，斜体就废了。</td>
+        <td>升级前先读文件头的注释，重新打一遍那两个补丁。</td>
+      </tr>
+      <tr>
+        <td><code>assets/auth.js</code></td>
+        <td>脚本生成的，手改会让 salt 和哈希对不上，直接登不进去。</td>
+        <td>跑 <code>node tools/set-passphrase.mjs</code>。</td>
+      </tr>
+      <tr>
+        <td><code>blog.html</code> 里的 <code>id</code> 和 <code>data-act</code></td>
+        <td>JS 全靠它们找元素和分派点击。改个名字就是静默失效——不报错，按钮就是没反应。</td>
+        <td>要改就 <code>blog.js</code> 里一起改。</td>
+      </tr>
+      <tr>
+        <td><code>.env</code></td>
+        <td>口令明文。已经 gitignore 了，<strong>永远别提交</strong>。</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <!-- ══════════════════════════════════════════════════════════════════ -->
+  <h2 id="deploy">8 · 上线与排错</h2>
+
+  <h3>本地预览</h3>
+  <p>
+    改完先在本地看一眼。<strong>用 <code>http://</code>，别双击文件用 <code>file://</code> 打开。</strong>
+  </p>
+  <div class="note">
+    <span class="label">原因不是「file:// 不能用」</span>
+    <p>
+      实测过：Chrome 在 <code>file://</code> 下 localStorage 能用、
+      <code>isSecureContext</code> 是 <code>true</code>、WebCrypto 也正常，作者登录能成功。
+      真正的坑是 <strong>origin 对不上</strong>：
+    </p>
+    <ul style="margin-top:8px">
+      <li><code>file://</code> 和 <code>http://localhost:8765</code> 是<strong>两个不同的 origin</strong>，
+        各有各的 localStorage。在其中一边写的文章，另一边看不到，很容易以为文章丢了。</li>
+      <li>所有 <code>file://</code> 页面<strong>共用同一个 origin</strong>（就叫 <code>file://</code>），
+        本机任何一个 HTML 文件都在读写同一份 localStorage。</li>
+      <li>线上是 <code>https://</code>，用 <code>http://localhost</code> 预览才和线上行为一致。</li>
+    </ul>
+    <p style="margin-top:8px">
+      另外各浏览器对 <code>file://</code> 的宽松程度不一样（上面这组数据来自 Chrome），
+      统一用 <code>http://</code> 就不用操心这些差异。
+    </p>
+  </div>
+<pre><code>cd ~/Documents/"Personal Blog"
+python3 -m http.server 8765
+# 然后浏览器打开 http://localhost:8765</code></pre>
+  <p>看完记得关掉：<code>pkill -f "http.server 8765"</code></p>
+
+  <h3>上线</h3>
+<pre><code>cd ~/Documents/"Personal Blog"
+git add -A
+git commit -m "改了什么"
+git push</code></pre>
+  <p>
+    push 到 <code>main</code> 之后 GitHub Pages 自动构建，
+    <strong>大约 1 分钟</strong>后 <a href="https://junchi-shen.github.io" target="_blank" rel="noopener">junchi-shen.github.io</a>
+    就是新的。没有构建配置、没有 CI、没有别的步骤。
+  </p>
+
+  <h3>常见故障</h3>
+  <div class="doc-tablewrap"><table class="table">
+    <thead><tr><th>现象</th><th>多半是</th></tr></thead>
+    <tbody>
+      <tr><td>线上没变化</td><td>还在构建，等一分钟；或者浏览器缓存，硬刷新（⌘⇧R）。查构建状态：<code>gh api repos/Junchi-Shen/Junchi-Shen.github.io/pages/builds/latest --jq .status</code></td></tr>
+      <tr><td>页面没样式，纯文字</td><td>CSS 路径写错了。路径都是相对的（<code>assets/…</code>），别改成 <code>/assets/…</code></td></tr>
+      <tr><td>中英文黏在一起</td><td>漏了 <code>&lt;span data-sep&gt; · &lt;/span&gt;</code></td></tr>
+      <tr><td>切成「中」还是显示英文</td><td>那段没加 <code>data-en</code> 属性</td></tr>
+      <tr><td>登不进作者模式</td><td>口令记错了（查 <code>cat .env</code>）；或 <code>assets/auth.js</code> 没生成——这时会弹「缺少 assets/auth.js」的提示，跑一次 <code>node tools/set-passphrase.mjs</code></td></tr>
+      <tr><td>文章不见了</td><td>换了浏览器 / 清了缓存 / 开了无痕；<strong>或者换了地址栏</strong>——<code>file://</code> 和 <code>http://localhost</code> 是两个 origin，各存各的。只能靠之前导出的 JSON 恢复</td></tr>
+      <tr><td>工具条按钮点了没反应</td><td><code>markdown-toolbar</code> 的 <code>for="d-content"</code> 和 textarea 的 <code>id</code> 对不上了</td></tr>
+      <tr><td>项目编号乱了</td><td>加减项目后忘了重编 <code>.proj-num</code>（见 §2）</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>心里有底的几件事</h3>
+  <ul>
+    <li><strong>改不坏。</strong>所有东西在 git 里，<code>git revert HEAD</code> 就能退回去。</li>
+    <li><strong>没有依赖。</strong>不用 <code>npm install</code>，不用装工具链，换台电脑 clone 下来就能改。</li>
+    <li><strong>唯一的外部依赖是 Google Fonts。</strong>断网时字体回退到系统衬线体，布局不会散。</li>
+  </ul>
+
+  <footer class="site-footer" style="margin-top:70px;padding-top:28px;border-top:1px solid var(--color-divider)">
+    <span>Junchi Shen — 开发文档</span>
+    <span><a href="index.html">主页</a> · <a href="blog.html">博客</a></span>
+  </footer>
+
+</div>
+
+</body>
+</html>

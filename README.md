@@ -4,9 +4,14 @@ Built from the Claude Design handoff `个人背景网站设计` (`Blog.dc.html` 
 `Junchi Shen Personal Site v2.dc.html`). Plain static HTML/CSS/JS — no build
 step, no dependencies. Open `index.html` in a browser and it works.
 
+**改这个站怎么改**，看 [develop.html](develop.html) —— 哪里加、哪里减、哪里别动，
+带可直接粘贴的模板。线上：https://junchi-shen.github.io/develop.html
+（noindex，不进搜索结果，也没挂在导航里）
+
 ```
 index.html          主页 · home (hero, papers, projects, Qbitbrief, education, contact)
 blog.html           博客 · blog (list / editor / preview)
+develop.html        开发文档 · how to edit this site
 assets/ds.css       Classical design system — tokens + component classes (from the handoff, unchanged)
 assets/site.css     页面样式 · page styles + responsive rules
 assets/site.js      中英切换 · the bilingual switch
@@ -95,4 +100,8 @@ cd ~/Documents/"Personal Blog" && python3 -m http.server 8765
 ```
 
 Cloudflare Pages / GitHub Pages 直接指到这个目录即可，无需构建命令。
-注意本地预览要用 `http://`，`file://` 下浏览器会禁用 localStorage，博客存不了东西。
+
+本地预览用 `http://`，别双击文件走 `file://`。原因不是 `file://` 不能用
+（实测 Chrome 下 localStorage、WebCrypto 都正常），而是 **origin 对不上**：
+`file://` 和 `http://localhost:8765` 各有各的 localStorage，在一边写的文章
+另一边看不到；而且所有 `file://` 页面共用同一个 origin。
