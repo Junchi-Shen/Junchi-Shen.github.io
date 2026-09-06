@@ -55,16 +55,18 @@
   }
   function hasToken() { return !!getToken(); }
 
-  function apiHeaders() {
+  // Takes an explicit token so a candidate can be tested before it is stored.
+  function apiHeaders(token) {
     return {
-      'Authorization': 'Bearer ' + getToken(),
+      'Authorization': 'Bearer ' + (token || getToken()),
       'Accept': 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28'
     };
   }
 
   function describeError(res, body) {
-    if (res.status === 401) return '令牌无效或已过期 · Token invalid or expired';
+    if (res.status === 401) return '令牌被 GitHub 拒绝（401）。常见原因：复制时缺了字符或多了空格；令牌已过期或被撤销；' +
+      '这是个 fine-grained 令牌但还没被批准。 · Token rejected by GitHub';
     if (res.status === 403) return '令牌权限不足（需要 Contents: Read and write）· Token lacks Contents write permission';
     if (res.status === 404) return '仓库或文件找不到，也可能是令牌没有授权这个仓库 · Not found, or token has no access to this repo';
     if (res.status === 409) return '远端已被改动，请刷新后重试 · Remote changed, reload and retry';
@@ -184,12 +186,13 @@
   }
 
   // Cheap check that the token actually reaches both repos, so the owner finds
-  // out at setup time rather than at publish time.
-  function verifyToken() {
+  // out at setup time rather than at publish time. Pass a candidate token to
+  // test it WITHOUT storing it — a token that fails here must never be kept.
+  function verifyToken(candidate) {
     var base = CFG.api + '/repos/' + CFG.owner + '/';
     return Promise.all([
-      apiJson(base + CFG.publicRepo, { headers: apiHeaders() }),
-      apiJson(base + CFG.privateRepo, { headers: apiHeaders() })
+      apiJson(base + CFG.publicRepo, { headers: apiHeaders(candidate) }),
+      apiJson(base + CFG.privateRepo, { headers: apiHeaders(candidate) })
     ]).then(function (r) {
       return {
         publicOk: !!r[0], privateOk: !!r[1],

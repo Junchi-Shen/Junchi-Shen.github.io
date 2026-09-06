@@ -519,6 +519,14 @@
       setSyncMsg('已发布：公开 ' + r.publicCount + ' 篇 · 私密 ' + r.privateCount +
         ' 篇。线上约 1 分钟后更新。', 'ok');
     }).catch(function (err) {
+      // A 401 means the stored token is useless — keeping it only guarantees
+      // the same failure next time, so drop it and ask for a new one.
+      if (err.status === 401) {
+        BlogSync.clearToken();
+        renderSyncState();
+        setSyncMsg('发布失败：' + err.message + ' 已清除本机保存的令牌，请重新连接。', 'err');
+        return;
+      }
       setSyncMsg('发布失败：' + err.message, 'err');
     });
   }
@@ -533,28 +541,29 @@
   function saveToken() {
     var t = $('#token-input').value.trim();
     if (!t) return;
-    BlogSync.setToken(t);
     $('#token-status').textContent = '正在验证… · Verifying…';
-    BlogSync.verifyToken().then(function (v) {
+    // Verify the candidate BEFORE storing it. Storing first and cleaning up on
+    // failure left a rejected token behind whenever the cleanup path was
+    // missed — which then failed at publish time with a confusing 401.
+    BlogSync.verifyToken(t).then(function (v) {
       if (!v.privateIsPrivate) {
-        BlogSync.clearToken();
         $('#token-status').textContent =
           '中止：blog-private 仓库不是私有的。请先把它设为 Private 再试。';
         return;
       }
       if (!v.publicWritable || !v.privateWritable) {
-        BlogSync.clearToken();
         $('#token-status').textContent =
           '令牌能读但不能写。请把权限设成 Contents: Read and write，并确认两个仓库都授权了。';
         return;
       }
+      BlogSync.setToken(t);
       $('#token-status').textContent = '验证通过，两个仓库都可写。';
       show($('#token-dialog'), false);
       renderSyncState();
       loadFromRepos();
     }).catch(function (err) {
-      BlogSync.clearToken();
       $('#token-status').textContent = '验证失败：' + err.message;
+      renderSyncState();
     });
   }
 
